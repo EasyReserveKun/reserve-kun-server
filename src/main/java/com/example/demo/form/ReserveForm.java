@@ -6,28 +6,29 @@ import com.example.demo.entity.Reserve;
 
 import lombok.Data;
 
-@Data
+@Data  // Lombokの@Dataアノテーション：ゲッター、セッター、toString、equals、hashCodeなどを自動生成します
 public class ReserveForm {
 
-	private Date date;
+    private Date date;  // 予約日
 
-	private String time;
+    private String time;  // 予約時間
 
-	private String eid;
+    private String eid;  // 従業員ID
 
-	private String cid;
+    private String cid;  // 顧客ID
 
-	private String etc;
+    private String etc;  // その他の情報
 
-	public Reserve getEntity() {
+    // Reserveクラスへデータの受け渡し
+    public Reserve getEntity() {
+        // Reserveエンティティオブジェクトを取得するメソッド
 
-		Reserve reserve = new Reserve();
-		reserve.setDate(date);
-		reserve.setTime(time);
-		reserve.setEid(eid);
-		reserve.setCid(cid);
-		reserve.setEtc(etc);
-		return reserve;
-
-	}
+        Reserve reserve = new Reserve();  // Reserveエンティティのインスタンスを作成します
+        reserve.setDate(date);  // 予約日を設定します
+        reserve.setTime(time);  // 予約時間を設定します
+        reserve.setEid(eid);  // 従業員IDを設定します
+        reserve.setCid(cid);  // 顧客IDを設定します
+        reserve.setEtc(etc);  // その他の情報を設定します
+        return reserve;  // 作成したReserveエンティティオブジェクトを返します
+    }
 }

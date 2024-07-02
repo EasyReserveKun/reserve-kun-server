@@ -7,17 +7,17 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-@Embeddable
-@Table(name = "t_reserve")
-@Data
+@Embeddable  // reserveクラスのCompositeKeyクラスであることを示します
+@Table(name = "t_reserve")  // テーブル名が"t_reserve"であることを指定します
+@Data  // Lombokの@Dataアノテーション：ゲッター、セッター、toString、equals、hashCodeなどを自動生成します
 public class ReserveCompositeKey {
 
-	@Column(name = "date")
-	private Date date;
+    @Column(name = "date")  // データベースのカラム名が"date"であることを指定します
+    private Date date;  // 予約日
 
-	@Column(name = "time")
-	private String time;
+    @Column(name = "time")  // データベースのカラム名が"time"であることを指定します
+    private String time;  // 予約時間
 
-	@Column(name = "eid")
-	private String eid;
+    @Column(name = "eid")  // データベースのカラム名が"eid"であることを指定します
+    private String eid;  // 従業員ID
 }

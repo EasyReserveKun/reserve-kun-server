@@ -11,19 +11,22 @@ import com.example.demo.repository.ReserveCheckRepository;
 
 import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
-@RestController
+@AllArgsConstructor  // Lombokのアノテーション：全ての引数を持つコンストラクタを生成します
+@RestController  // このクラスがRESTコントローラであることを示します
 public class ReserveCheckController {
 
-	private final ReserveCheckRepository reserveCheckRepository;
+    private final ReserveCheckRepository reserveCheckRepository;  // 自動ワイヤリングされるリポジトリの依存関係
 
-	@PostMapping("/b")
-	public List<String> reserveCheck(@ModelAttribute ReserveCheckForm reserveCheckForm) {
+    @PostMapping("/b")  // "/b"エンドポイントに対するPOSTリクエストを処理します
+    public List<String> reserveCheck(@ModelAttribute ReserveCheckForm reserveCheckForm) {
+        // @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
 
-		List<String> list = reserveCheckRepository.findAllTimesByDateAndEid(reserveCheckForm.getDate(),
-				reserveCheckForm.getEid());
-		
-		return list;
-
-	}
+        // 日付と社員IDに基づいてリポジトリから時間のリストを取得します
+        List<String> list = reserveCheckRepository.findAllTimesByDateAndEid(
+            reserveCheckForm.getDate(),  // フォームオブジェクトから日付を取得します
+            reserveCheckForm.getEid()    // フォームオブジェクトから社員IDを取得します
+        );
+        
+        return list;  // 時間のリストをレスポンスとして返します
+    }
 }
