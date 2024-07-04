@@ -7,17 +7,25 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-@Embeddable  // reserveクラスのCompositeKeyクラスであることを示します
-@Table(name = "t_reserve")  // テーブル名が"t_reserve"であることを指定します
-@Data  // Lombokの@Dataアノテーション：ゲッター、セッター、toString、equals、hashCodeなどを自動生成します
+//--------------------------------------------------//
+//　　ReserveRestController.java
+//　　予約情報のキーを保持する埋め込みクラス
+//--------------------------------------------------//
+
+@Data  // 基本的なメソッドの自動生成
+@Embeddable  // このクラスをCompositeKey用のクラスとして扱う
+@Table(name = "t_reserve")  // "t_reserve"テーブルの指定
 public class ReserveCompositeKey {
 
-    @Column(name = "date")  // データベースのカラム名が"date"であることを指定します
-    private Date date;  // 予約日
+	// 予約日
+    @Column(name = "date")
+    private Date date;
 
-    @Column(name = "time")  // データベースのカラム名が"time"であることを指定します
-    private String time;  // 予約時間
+    // 予約時間
+    @Column(name = "time")
+    private String time;
 
-    @Column(name = "eid")  // データベースのカラム名が"eid"であることを指定します
-    private String eid;  // 従業員ID
+    // 従業員ID
+    @Column(name = "eid")
+    private String eid;
 }
