@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -44,7 +45,7 @@ public class ReserveRestController {
 
     // 予約可能な時間の確認--------------------------------------------------
     @PostMapping("/available")
-    public List<String> available(@ModelAttribute ReserveCheckForm reserveCheckForm) {
+    public List<String> available(@RequestBody ReserveCheckForm reserveCheckForm) {
         // @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
 
         // 日付と社員IDに基づいてリポジトリから時間のリストを取得します
