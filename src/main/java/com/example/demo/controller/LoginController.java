@@ -18,7 +18,7 @@ public class LoginController {
     }
 
     // POSTメソッドで "/Login" パスにマッピングされるログイン処理のエンドポイント
-    @PostMapping("/Login")
+    @PostMapping("/LoginCheck")
     public int login(@ModelAttribute LoginForm loginForm) {
         // LoginFormからユーザ名（cid）とパスワードを取得して、LoginServiceのcountメソッドを呼び出す
         return loginService.count(loginForm.getCid(), loginForm.getPassword());
