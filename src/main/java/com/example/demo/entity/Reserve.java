@@ -9,11 +9,15 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-// t_reserveテーブルのエンティティクラス
-@Data  // Lombokの@Dataアノテーションにより、ゲッター、セッター、toStringなどが自動生成されます
-@Entity  // JPAのエンティティであることを示すアノテーション
-@IdClass(ReserveCompositeKey.class)  // 複合キークラスを指定します
-@Table(name = "t_reserve")  // マッピングするデータベースのテーブル名を指定します
+//--------------------------------------------------//
+//  Reserve.java
+//  予約情報を保持するエンティティクラス
+//--------------------------------------------------//
+
+@Data  // 基本的なメソッドの自動生成
+@Entity  // エンティティクラスであることの宣言
+@IdClass(ReserveCompositeKey.class)  // 複合キーの指定
+@Table(name = "t_reserve")  // "t_reserve"テーブルの指定
 public class Reserve {
 
     // 日付(主キー)
@@ -30,11 +34,11 @@ public class Reserve {
     @Id
     @Column(name = "eid")
     private String eid;
-    
+
     // 顧客番号(外部キー)
     @Column(name = "cid")
     private String cid;
-    
+
     // 備考欄
     @Column(name = "etc")
     private String etc;

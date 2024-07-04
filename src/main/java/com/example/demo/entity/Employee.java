@@ -6,19 +6,27 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-@Data  // Lombokの@Dataアノテーション：ゲッター、セッター、toString、equals、hashCodeなどを自動生成します
-@Entity  // このクラスがJPAエンティティであることを示します
-@Table(name = "m_employee")  // テーブル名が"m_employee"であることを指定します
+//--------------------------------------------------//
+//  Employee.java
+//  コンシェルジュ情報を保持するエンティティクラス
+//--------------------------------------------------//
+
+@Data  // 基本的なメソッドの自動生成
+@Entity  // エンティティクラスであることの宣言
+@Table(name = "m_employee")  // "m_employee"テーブルの指定
 public class Employee {
 
-    @Id  // このフィールドが主キーであることを示します
-    @Column(name = "eid")  // データベースのカラム名が"eid"であることを指定します
-    public Integer eid;  // 従業員ID
+	// 従業員ID (主キー)
+    @Id
+    @Column(name = "eid")
+    public Integer eid;
 
-    @Column(name = "ename")  // データベースのカラム名が"ename"であることを指定します
-    public String ename;  // 従業員名
+    // 従業員名
+    @Column(name = "ename")
+    public String ename;
 
-    @Column(name = "category")  // データベースのカラム名が"category"であることを指定します
-    public String category;  // カテゴリ
+    // カテゴリ
+    @Column(name = "category")
+    public String category;
 
 }

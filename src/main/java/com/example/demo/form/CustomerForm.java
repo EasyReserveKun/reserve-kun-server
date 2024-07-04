@@ -4,22 +4,25 @@ import com.example.demo.entity.Customer;
 
 import lombok.Data;
 
-@Data  // Lombokの@Dataアノテーション：ゲッター、セッター、toString、equals、hashCodeなどを自動生成します
+@Data  // 基本的なメソッドの自動生成
 public class CustomerForm {
 
     private String cid;  // 顧客ID
-
     private String cname;  // 顧客名
-
     private String password;  // パスワード
 
-    public Customer getEntity() {
-        // エンティティオブジェクトを取得するメソッド
 
-        Customer customer = new Customer();  // Customerエンティティのインスタンスを作成します
-        customer.setCid(cid);  // 顧客IDを設定します
-        customer.setCname(cname);  // 顧客名を設定します
-        customer.setPassword(password);  // パスワードを設定します
-        return customer;  // 作成したCustomerエンティティオブジェクトを返します
+    // エンティティオブジェクトを取得するメソッド
+    public Customer getEntity() {
+    	// 戻し値となるcustomerオブジェクト
+        Customer customer = new Customer();
+
+        // customerオブジェクトにFormに入力された値を代入
+        customer.setCid(cid);
+        customer.setCname(cname);
+        customer.setPassword(password);
+
+        //フォーム情報通りのcustomerを返す
+        return customer;
     }
 }
