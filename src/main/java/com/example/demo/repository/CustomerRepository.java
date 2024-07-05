@@ -21,4 +21,6 @@ public interface CustomerRepository extends JpaRepository<Customer, String> {
 
     @Query(value = "SELECT * FROM m_customer WHERE cid = :cid AND password = crypt(:password, password)", nativeQuery = true)
     public Optional<Customer> findByCidAndPassword(String cid, String password);
+
+    public Optional<Customer> findByCid(String cid);
 }
