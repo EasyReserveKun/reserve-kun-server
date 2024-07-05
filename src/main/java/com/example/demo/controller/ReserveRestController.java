@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,7 @@ public class ReserveRestController {
     private final ReserveRepository reserveRepository;
 
     // 予約情報の追加--------------------------------------------------
+    @CrossOrigin
     @PostMapping("/insert")
     public RedirectView insert(@ModelAttribute ReserveForm reserveForm) {
     	// フォーム情報の受け取り
@@ -44,6 +46,7 @@ public class ReserveRestController {
     }
 
     // 予約可能な時間の確認--------------------------------------------------
+    @CrossOrigin
     @PostMapping("/available")
     public List<String> available(@RequestBody ReserveCheckForm reserveCheckForm) {
         // @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
@@ -58,6 +61,7 @@ public class ReserveRestController {
     }
 
     //--------------------------------------------------
+    @CrossOrigin
 	@PostMapping("/check")
 	public List <Reserve> check(@ModelAttribute BookingCheckerForm bookingCheckerForm) {
 

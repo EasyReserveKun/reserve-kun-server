@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.util.HashMap;
 import java.util.List;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,7 @@ import lombok.AllArgsConstructor;
 public class EmployeeRestController {
 	private final EmployeeRepository employeeRepository;
 
+    @CrossOrigin
 	@GetMapping("list")
 	public HashMap<String, Object> list(){
 		HashMap<String, Object> responce = new HashMap<>();

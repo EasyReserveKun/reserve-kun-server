@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.entity.Customer;
 import com.example.demo.form.CustomerForm;
 import com.example.demo.form.CustomerLoginForm;
 import com.example.demo.repository.CustomerRepository;
@@ -33,13 +34,15 @@ public class CustomerRestController {
     @CrossOrigin
     @PostMapping("/login")
     public HashMap<String, Object> login(@RequestBody CustomerLoginForm customerLoginForm) {
-    	String loginName = loginService.isAccountExist(customerLoginForm);
+    	Customer loginUser = loginService.isAccountExist(customerLoginForm);
     	HashMap<String, Object> responce = new HashMap<>();
-    	responce.put("result", loginName);
+    	responce.put("Mail", loginUser.getCid());
+    	responce.put("Name", loginUser.getCname());
     	return responce;
     }
 
     // POSTメソッドでの処理を定義する
+    @CrossOrigin
     @PostMapping("/signup")
     public String signup(@ModelAttribute CustomerForm customerForm) {
 

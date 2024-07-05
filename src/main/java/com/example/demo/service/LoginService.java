@@ -17,14 +17,14 @@ public class LoginService {
     private final CustomerRepository customerRepository;
 
 	// ユーザ名（cid）とパスワードを受け取り、LoginRepositoryを通じて該当するレコードの数を取得する
-	public String isAccountExist(CustomerLoginForm customerLoginForm) {
+	public Customer isAccountExist(CustomerLoginForm customerLoginForm) {
 		Optional<Customer> optionalCustomer = customerRepository.findByCidAndPassword(customerLoginForm.getCid(),
 				customerLoginForm.getPassword());
 
 		if (optionalCustomer.isEmpty()) {
 			return null;
 		} else {
-			return optionalCustomer.get().getCname();
+			return optionalCustomer.get();
 		}
 	}
 }
