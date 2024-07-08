@@ -15,6 +15,7 @@ import com.example.demo.form.BookingCheckerForm;
 import com.example.demo.form.ReserveCheckForm;
 import com.example.demo.form.ReserveForm;
 import com.example.demo.repository.ReserveRepository;
+import com.example.demo.service.UrlService;
 
 import lombok.AllArgsConstructor;
 
@@ -42,7 +43,7 @@ public class ReserveRestController {
         reserveRepository.saveAndFlush(reserve);
 
         // 書き込み後、ホームへリダイレクト
-        return new RedirectView("https://easy-reserve-kun.azurewebsites.net/");
+        return new RedirectView(UrlService.getWebUrl());
     }
 
     // 予約可能な時間の確認--------------------------------------------------
