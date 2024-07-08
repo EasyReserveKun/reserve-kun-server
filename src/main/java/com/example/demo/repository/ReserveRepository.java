@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,5 +25,10 @@ public interface ReserveRepository extends JpaRepository<Reserve, ReserveComposi
 	// 予約情報をユーザーでフィルタして検索
 	public List<Reserve> findAllByCid(String cid);
 
+	// 予約情報をコンシェルジュ、日付、時間でソートして検索
+	public Optional<Reserve> findAllByDateAndTimeAndEid(Date date, String time, String eid);
+
+	// 予約情報を顧客、日付、時間でソートして検索
+	public Optional<Reserve> findAllByDateAndTimeAndCid(Date date, String time, String cid);
 
 }

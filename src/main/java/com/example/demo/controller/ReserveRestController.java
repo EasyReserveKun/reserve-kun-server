@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -8,14 +9,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.view.RedirectView;
 
 import com.example.demo.entity.Reserve;
 import com.example.demo.form.BookingCheckerForm;
 import com.example.demo.form.ReserveCheckForm;
 import com.example.demo.form.ReserveForm;
 import com.example.demo.repository.ReserveRepository;
-import com.example.demo.service.UrlService;
+import com.example.demo.service.ReserveService;
+import com.example.demo.service.ResponceService;
 
 import lombok.AllArgsConstructor;
 
@@ -31,19 +32,26 @@ public class ReserveRestController {
 
 	 // ReserveRepositoryのインジェクション
     private final ReserveRepository reserveRepository;
+    private final ReserveService reserveService;
 
     // 予約情報の追加--------------------------------------------------
     @CrossOrigin
     @PostMapping("/insert")
-    public RedirectView insert(@ModelAttribute ReserveForm reserveForm) {
-    	// フォーム情報の受け取り
+    public HashMap<String, Object> insert(@RequestBody ReserveForm reserveForm) {
+    	HashMap<String, Object> responce = new HashMap<>();
         Reserve reserve = reserveForm.getEntity();
 
-        // データベースへの書き込み
-        reserveRepository.saveAndFlush(reserve);
+        // エラーチェック
+        String error = reserveService.reserveExceptionCheck(reserveForm);
+        if(error.isEmpty()) {
+            // データベースへの書き込み
+            reserveRepository.saveAndFlush(reserve);
+            responce = ResponceService.responceMaker("Success");
+        } else {
+        	responce = ResponceService.responceMaker(error);
+        }
 
-        // 書き込み後、ホームへリダイレクト
-        return new RedirectView(UrlService.getWebUrl());
+		return responce;
     }
 
     // 予約可能な時間の確認--------------------------------------------------
@@ -65,8 +73,6 @@ public class ReserveRestController {
     @CrossOrigin
 	@PostMapping("/check")
 	public List <Reserve> check(@ModelAttribute BookingCheckerForm bookingCheckerForm) {
-
-
 		List<Reserve> list = reserveRepository.findAllByCid(bookingCheckerForm.getCid());
 
 
