@@ -22,7 +22,7 @@ jobs:
           java-version: '17'
 
       - name: Build with Maven
-        run: mvn clean install -DskipTests=true
+        run: mvn clean install
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
@@ -50,4 +50,4 @@ jobs:
           app-name: 'reserve-kun-server'
           slot-name: 'Production'
           package: '*.jar'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_51D77A0A4FBA452996F6E590337EDB84 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_73671AD6528948EC8ABEC247BB8FAA8F }}
