@@ -19,13 +19,13 @@ public class QuestionAnsweringController {
 
     private final CustomQuestionAnsweringService cqaService;
 
+    @CrossOrigin
     @PostMapping("/search")
     public Map<String, Object> askQuestion(@RequestBody Map<String, String> request) {
         String question = request.get("question");
         return cqaService.getAnswer(question);
     }
 
-    @CrossOrigin
     @GetMapping("/ask")
     public Map<String, Object> askQuestion(@RequestParam String question) {
         return cqaService.getAnswer(question);
