@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,7 +34,7 @@ public class CustomQuestionAnsweringService {
         this.restTemplate = restTemplate;
     }
 
-    public String getAnswer(String question) {
+    public Map<String, Object> getAnswer(String question) {
         String url = endpoint + "language/:query-knowledgebases?projectName=" + projectName + "&api-version=2021-10-01&deploymentName=" + deploymentName;
 
         HttpHeaders headers = new HttpHeaders();
@@ -46,7 +47,7 @@ public class CustomQuestionAnsweringService {
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(url, HttpMethod.POST, entity, new ParameterizedTypeReference<Map<String, Object>>() {});
 
         return response.getBody();
     }
