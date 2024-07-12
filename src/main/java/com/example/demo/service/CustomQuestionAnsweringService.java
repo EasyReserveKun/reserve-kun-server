@@ -42,8 +42,11 @@ public class CustomQuestionAnsweringService {
         headers.set("Content-Type", "application/json");
 
         Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("top", 1);
         requestBody.put("question", question);
-        requestBody.put("top", 3);
+        requestBody.put("confidenceScoreThreshold", 0.3);
+
+
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
