@@ -81,17 +81,12 @@ public class ReserveRestController {
 	@PostMapping("/cancel")
 	public String cancel(@RequestBody ReserveForm reserveForm) {
     	
-    	System.out.println(reserveForm.getDate());
-    	System.out.println(reserveForm.getTime());
-    	System.out.println(reserveForm.getEid());
     	List<Reserve> reservations = 
     			reserveRepository.findByDateAndTimeAndEid(reserveForm.getDate(), reserveForm.getTime(), reserveForm.getEid());
         if (!reservations.isEmpty()) {
-        	System.out.println("あ");
             reserveRepository.deleteAll(reservations);
             return "予約をキャンセルしました";
         } else {
-        	System.out.println("い");
             return "該当する予約が見つかりませんでした";
         }
 	}
