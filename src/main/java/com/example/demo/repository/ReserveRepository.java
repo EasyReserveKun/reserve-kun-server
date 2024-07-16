@@ -23,12 +23,14 @@ public interface ReserveRepository extends JpaRepository<Reserve, ReserveComposi
     List<String> findAllTimesByDateAndEid(@Param("date") Date date, @Param("eid") String eid);
 
 	// 予約情報をユーザーでフィルタして検索
-	public List<Reserve> findAllByCid(String cid);
+	public List<Reserve> findAllByCidOrderByDate(String cid);
 
 	// 予約情報をコンシェルジュ、日付、時間でソートして検索
 	public Optional<Reserve> findAllByDateAndTimeAndEid(Date date, String time, String eid);
 
 	// 予約情報を顧客、日付、時間でソートして検索
-	public Optional<Reserve> findAllByDateAndTimeAndCid(Date date, String time, String cid);
+	public Optional<Reserve> findAllByDateAndTimeAndCid(Date date, String time, String eid);
+	
+	public List<Reserve> findByDateAndTimeAndEid(Date date,String time,String eid);
 
 }

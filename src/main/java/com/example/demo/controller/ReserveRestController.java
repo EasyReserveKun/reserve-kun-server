@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,10 +71,28 @@ public class ReserveRestController {
     //--------------------------------------------------
     @CrossOrigin
 	@PostMapping("/check")
-	public List <Reserve> check(@ModelAttribute BookingCheckerForm bookingCheckerForm) {
-		List<Reserve> list = reserveRepository.findAllByCid(bookingCheckerForm.getCid());
-
-
+	public List <Reserve> check(@RequestBody BookingCheckerForm bookingCheckerForm) {
+		List<Reserve> list = reserveRepository.findAllByCidOrderByDate(bookingCheckerForm.getCid());
+		
 		return list;
+	}
+    
+    @CrossOrigin
+	@PostMapping("/cancel")
+	public String cancel(@RequestBody ReserveForm reserveForm) {
+    	
+    	System.out.println(reserveForm.getDate());
+    	System.out.println(reserveForm.getTime());
+    	System.out.println(reserveForm.getEid());
+    	List<Reserve> reservations = 
+    			reserveRepository.findByDateAndTimeAndEid(reserveForm.getDate(), reserveForm.getTime(), reserveForm.getEid());
+        if (!reservations.isEmpty()) {
+        	System.out.println("あ");
+            reserveRepository.deleteAll(reservations);
+            return "予約をキャンセルしました";
+        } else {
+        	System.out.println("い");
+            return "該当する予約が見つかりませんでした";
+        }
 	}
 }
