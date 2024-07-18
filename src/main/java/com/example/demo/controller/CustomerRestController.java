@@ -1,22 +1,30 @@
 package com.example.demo.controller;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.Customer;
+import com.example.demo.entity.Employee;
+import com.example.demo.entity.Temporary;
 import com.example.demo.form.CustomerForm;
 import com.example.demo.form.CustomerLoginForm;
 import com.example.demo.repository.CustomerRepository;
+import com.example.demo.repository.TemporaryRepository;
 import com.example.demo.service.LoginService;
 import com.example.demo.service.MailSenderServise;
 import com.example.demo.service.ResponceService;
+import com.example.demo.service.SignupService;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 //--------------------------------------------------//
@@ -30,8 +38,10 @@ import lombok.AllArgsConstructor;
 public class CustomerRestController {
 
 	private final CustomerRepository customerRepository;
+	private final TemporaryRepository temporaryRepository;
 	private final LoginService loginService;
 	private final MailSenderServise msService;
+	private final SignupService signupService;
 
 	// 送信されたアカウント情報の照合を行うAPI
 	@CrossOrigin
@@ -53,23 +63,32 @@ public class CustomerRestController {
 
 	// 登録情報を受け取り、認証コードを送信
 	@CrossOrigin
+	@Transactional
 	@PostMapping("/signup")
 	public HashMap<String, Object> signup(@RequestBody CustomerForm customerForm) {
 		// 共通の処理
-		String code = generateCode();
 		HashMap<String, Object> responce = new HashMap<>();
-		
+		String code = generateCode();
+
 		// アカウントが新規かどうかの判定
 		Customer signupUser = loginService.isAccountExist(customerForm);
 		if (signupUser == null) {
-			//メールの送信
-			String title = "【かんたん予約くん】メールアドレス認証のお願い";
-			String message = "○○様\n"+
-							"ACE社コンシェルジュデスク予約サービス「かんたん予約くん」にご登録いただきありがとうございます。\n" +
-							"アカウントは現在、仮登録状態です。下記コードを入力して、本登録を行ってください。 \n\n" +
-							"認証コード：" + code + "\n\n" +
-							"今後ともACE社およびかんたん予約くんをよろしくお願いいたします。 \n"+
-							"ACE";
+			// DBの処理
+			temporaryRepository.insertUser(customerForm.getCid(), customerForm.getCname(), 
+					customerForm.getPassword(), LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS), code);
+			// メールの送信
+			String title = "【かんたん予約くん】仮登録のご案内";
+	        String message = "○○様\n\n" +
+	                         "ACE社コンシェルジュデスク予約サービス「かんたん予約くん」にご登録いただきありがとうございます。\n\n" +
+	                         "会員情報の「仮登録」を受け付けました。\n" +
+	                         "※登録はまだ完了していません。\n\n" +
+	                         "当サービスをご利用いただくには「本登録」の手続きが必要です。\n" +
+	                         "下記の認証コードを入力して手続きを完了してください。\n\n" +
+	                         "認証コード：" + code + "\n\n" +
+	                         "30分以内に手続きが完了しない場合、仮登録が無効となります。\n" +
+	                         "その際は再度はじめから登録をやり直してください。\n\n" +
+	                         "※このメールは、送信専用メールアドレスから配信されています。\n" +
+	                         "※ご返信いただいてもお答えできませんので、ご了承ください。";
 			msService.sendSimpleMessage(customerForm.getCid(), title, message);
 			responce = ResponceService.responceMaker("Success");
 			responce.put("code", code);
@@ -78,33 +97,79 @@ public class CustomerRestController {
 		}
 		return responce;
 	}
+
 	// 認証コードが通った先の処理
 	@CrossOrigin
 	@PostMapping("/verify")
-	public HashMap<String, Object> verify(@RequestBody CustomerForm customerForm) {
+	public HashMap<String, Object> verify(@RequestBody HashMap<String, Object> requestBody) {
 		HashMap<String, Object> responce = new HashMap<>();
-		Customer signupUser = loginService.isAccountExist(customerForm);
-		if (signupUser == null) {
-			customerRepository.insertUser(customerForm.getCid(), customerForm.getCname(), customerForm.getPassword());
-			responce = ResponceService.responceMaker("Success");
+		String uuid = (String) requestBody.get("code");
+		// uuidからアカウント情報の取得
+		Temporary verifyCustomer = signupService.getCustomerFormFromUuid(uuid);
+		
+		//uuidが正しければ
+		if (verifyCustomer != null) {
+			//既に同じIDのアカウントがないか確認
+			CustomerForm customerForm = new CustomerForm();
+			customerForm.setCid(verifyCustomer.getCid());
+			Customer existingUser = loginService.isAccountExist(customerForm);
+			if (existingUser == null) {
+				// m_customerテーブルに入力
+				Customer customer = new Customer();
+				customer.setCid(verifyCustomer.getCid());
+				customer.setCname(verifyCustomer.getCname());
+				customer.setPassword(verifyCustomer.getPassword());
+				customerRepository.save(customer);
+				// m_temporaryテーブルから削除
+				temporaryRepository.delete(verifyCustomer);
+				// レスポンスを返す
+				responce = ResponceService.responceMaker("Success");
+			} else {
+				// 既に同じIDのアカウントが存在する場合エラーを返す
+				responce = ResponceService.responceMaker("Duplicate");
+			}
+		//uuidが存在しなければ
 		} else {
-			responce = ResponceService.responceMaker("Error");
+			responce = ResponceService.responceMaker("NotFound");
 		}
 		return responce;
 	}
 	
-	public static String generateCode() {
+    @CrossOrigin
+	@GetMapping("templist")
+	public HashMap<String, Object> templist(){
+		HashMap<String, Object> responce = new HashMap<>();
+		List<Temporary> tempList = temporaryRepository.findAll();
+		responce = ResponceService.responceMaker("Success");
+		responce.put("results", tempList);
+		responce.put("type", "Temporary");
+		return responce;
+	}
+    
+    @CrossOrigin
+	@GetMapping("customerlist")
+	public HashMap<String, Object> customerlist(){
+		HashMap<String, Object> responce = new HashMap<>();
+		List<Customer> customerList = customerRepository.findAll();
+		responce = ResponceService.responceMaker("Success");
+		responce.put("results", customerList);
+		responce.put("type", "Customer");
+		return responce;
+	}
+
+
+	public String generateCode() {
 		String code;
 		while (true) {
 			code = String.format("%06d", (int) (Math.random() * 1000000));
-			if (!isQuadrapleSameDigits(code)) {
+			if (!isQuadrapleSameDigits(code) && signupService.isNotUuidDuplicate(code)) {
 				break;
 			}
 		}
 		return code;
 	}
 
-	public static Boolean isQuadrapleSameDigits(String number) {
+	public Boolean isQuadrapleSameDigits(String number) {
 		for (int i = 1; i < number.length() - 3; i++) {
 			char digit1 = number.charAt(i);
 			char digit2 = number.charAt(i + 1);
