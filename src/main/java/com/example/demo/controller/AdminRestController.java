@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.Customer;
-import com.example.demo.form.CustomerForm;
 import com.example.demo.form.CustomerLoginForm;
-import com.example.demo.repository.CustomerRepository;
 import com.example.demo.service.LoginService;
 import com.example.demo.service.ResponceService;
 
@@ -24,17 +22,17 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/customer")
-public class CustomerRestController {
+@RequestMapping("/admin")
+public class AdminRestController {
 
-	private final CustomerRepository customerRepository;
 	private final LoginService loginService;
 
-	// 送信されたアカウント情報の照合を行うAPI
+	// 送信されたアカウント情報の照合を行うAPI（管理者用）
 	@CrossOrigin
 	@PostMapping("/login")
 	public HashMap<String, Object> login(@RequestBody CustomerLoginForm customerLoginForm) {
-		Customer loginUser = loginService.isAccountExist(customerLoginForm);
+
+		Customer loginUser = loginService.AdminExist(customerLoginForm);
 		HashMap<String, Object> responce = new HashMap<>();
 		HashMap<String, Object> results = new HashMap<>();
 		if (loginUser != null) {
@@ -48,19 +46,5 @@ public class CustomerRestController {
 		return responce;
 	}
 
-	// POSTメソッドでの処理を定義する
-	@CrossOrigin
-	@PostMapping("/signup")
-	public HashMap<String, Object> signup(@RequestBody CustomerForm customerForm) {
-		HashMap<String, Object> responce = new HashMap<>();
-		Customer signupUser = loginService.isAccountExist(customerForm);
-		if (signupUser == null) {
-			customerRepository.insertUser(customerForm.getCid(), customerForm.getCname(), customerForm.getPassword());
-			responce = ResponceService.responceMaker("Success");
-		} else {
-			responce = ResponceService.responceMaker("Error");
-		}
-		return responce;
-	}
 
 }
