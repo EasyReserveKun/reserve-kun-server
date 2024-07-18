@@ -15,9 +15,15 @@ import jakarta.transaction.Transactional;
 public interface TemporaryRepository extends JpaRepository<Temporary, String> {
 	
     @Modifying
-    @Transactional 
-    @Query(value = "INSERT INTO m_temporary (cid, cname, password, date, uuid) VALUES (?1, ?2, crypt(?3, gen_salt('bf')), ?4, ?5)", nativeQuery = true)
-    public void insertUser(String cid, String cname, String password, LocalDateTime date, String uuid);
+    @Query(value = "INSERT INTO m_temporary (cid, cname, password, date, uuid) " +
+                   "VALUES (?1, ?2, crypt(?3, gen_salt('bf')), ?4, ?5) " +
+                   "ON CONFLICT (cid) DO UPDATE SET " +
+                   "cname = EXCLUDED.cname, " +
+                   "password = EXCLUDED.password, " +
+                   "date = EXCLUDED.date, " +
+                   "uuid = EXCLUDED.uuid",
+           nativeQuery = true)
+    void generateTemp(String cid, String cname, String password, LocalDateTime date, String uuid);
 	
     public Optional<Temporary> findByUuid(String uuid);
 }

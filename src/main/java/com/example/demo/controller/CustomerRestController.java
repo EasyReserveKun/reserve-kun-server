@@ -74,7 +74,7 @@ public class CustomerRestController {
 		Customer signupUser = loginService.isAccountExist(customerForm);
 		if (signupUser == null) {
 			// DBの処理
-			temporaryRepository.insertUser(customerForm.getCid(), customerForm.getCname(), 
+			temporaryRepository.generateTemp(customerForm.getCid(), customerForm.getCname(), 
 					customerForm.getPassword(), LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS), code);
 			// メールの送信
 			String title = "【かんたん予約くん】仮登録のご案内";
