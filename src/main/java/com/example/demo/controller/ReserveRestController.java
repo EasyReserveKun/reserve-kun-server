@@ -59,12 +59,15 @@ public class ReserveRestController {
     public List<String> available(@RequestBody ReserveCheckForm reserveCheckForm) {
         // @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
 
+    	System.out.println(1);
         // 日付と社員IDに基づいてリポジトリから時間のリストを取得します
         List<String> list = reserveRepository.findAllTimesByDateAndEid(
             reserveCheckForm.getDate(),  // フォームオブジェクトから日付を取得します
             reserveCheckForm.getEid()    // フォームオブジェクトから社員IDを取得します
         );
 
+        System.out.println(reserveCheckForm.getDate());
+        System.out.println(reserveCheckForm.getEid());
         return list;  // 時間のリストをレスポンスとして返します
     }
 
