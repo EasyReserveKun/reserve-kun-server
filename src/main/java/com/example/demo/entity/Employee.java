@@ -28,5 +28,8 @@ public class Employee {
     // カテゴリ
     @Column(name = "category")
     public String category;
+    
+    @Column(name = "stop_flag")
+    public String flag;
 
 }

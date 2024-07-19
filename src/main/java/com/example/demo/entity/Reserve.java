@@ -42,4 +42,7 @@ public class Reserve {
     // 備考欄
     @Column(name = "etc")
     private String etc;
+    
+    @Column(name = "stop_flag")
+    private String stop_flag;
 }

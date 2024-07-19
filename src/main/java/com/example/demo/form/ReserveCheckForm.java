@@ -10,5 +10,7 @@ public class ReserveCheckForm {
     private Date date;  // 予約日
 
     private String eid;  // 従業員ID
+    
+    private String stop_flag;
 
 }

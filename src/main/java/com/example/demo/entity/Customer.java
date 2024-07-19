@@ -28,5 +28,9 @@ public class Customer {
     // パスワード
     @Column(name = "password")
     public String password;
+    
+    // 
+    @Column(name = "administrator")
+    public String admin;
 
 }

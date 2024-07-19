@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,17 +64,57 @@ public class ReserveRestController {
             reserveCheckForm.getDate(),  // フォームオブジェクトから日付を取得します
             reserveCheckForm.getEid()    // フォームオブジェクトから社員IDを取得します
         );
-
+        
         return list;  // 時間のリストをレスポンスとして返します
     }
 
     //--------------------------------------------------
     @CrossOrigin
 	@PostMapping("/check")
-	public List <Reserve> check(@ModelAttribute BookingCheckerForm bookingCheckerForm) {
-		List<Reserve> list = reserveRepository.findAllByCid(bookingCheckerForm.getCid());
-
-
+	public List <Reserve> check(@RequestBody BookingCheckerForm bookingCheckerForm) {
+		List<Reserve> list = reserveRepository.findAllByCidOrderByDate(bookingCheckerForm.getCid());
+		
 		return list;
 	}
+    
+    @CrossOrigin
+   	@PostMapping("/employeeCheck")
+   	public List <Reserve> employeeCheck(@RequestBody BookingCheckerForm bookingCheckerForm) {
+    	List<Reserve> list;
+    	if("all".equals(bookingCheckerForm.getEid())){
+    		 list = reserveRepository.findAllByOrderByDate();
+    	}else {
+    		 list = reserveRepository.findAllByEidOrderByDate(bookingCheckerForm.getEid());
+    	}
+   		return list;
+   	}
+    
+    @CrossOrigin
+	@PostMapping("/cancel")
+	public String cancel(@RequestBody ReserveForm reserveForm) {
+    	
+    	List<Reserve> reservations = 
+    			reserveRepository.findByDateAndTimeAndEid(reserveForm.getDate(), reserveForm.getTime(), reserveForm.getEid());
+        if (!reservations.isEmpty()) {
+            reserveRepository.deleteAll(reservations);
+            return "予約をキャンセルしました";
+        } else {
+            return "該当する予約が見つかりませんでした";
+        }
+	}
+    
+    @CrossOrigin
+    @PostMapping("/unavailable")
+    public List<String> unavailable(@RequestBody ReserveCheckForm reserveCheckForm) {
+        // @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
+
+        // 日付と社員IDに基づいてリポジトリから時間のリストを取得します
+        List<String> list = reserveRepository.findAllTimesByDateAndEidAndFlag(
+            reserveCheckForm.getDate(),  // フォームオブジェクトから日付を取得します
+            reserveCheckForm.getEid(),// フォームオブジェクトから社員IDを取得します
+            "1"//予約停止フラグ
+        );
+
+        return list;  // 時間のリストをレスポンスとして返します
+    }
 }
