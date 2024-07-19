@@ -81,6 +81,18 @@ public class ReserveRestController {
 	}
     
     @CrossOrigin
+   	@PostMapping("/employeeCheck")
+   	public List <Reserve> employeeCheck(@RequestBody BookingCheckerForm bookingCheckerForm) {
+    	List<Reserve> list;
+    	if("all".equals(bookingCheckerForm.getEid())){
+    		 list = reserveRepository.findAllByOrderByDate();
+    	}else {
+    		 list = reserveRepository.findAllByEidOrderByDate(bookingCheckerForm.getEid());
+    	}
+   		return list;
+   	}
+    
+    @CrossOrigin
 	@PostMapping("/cancel")
 	public String cancel(@RequestBody ReserveForm reserveForm) {
     	

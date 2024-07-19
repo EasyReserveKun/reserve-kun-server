@@ -24,6 +24,12 @@ public interface ReserveRepository extends JpaRepository<Reserve, ReserveComposi
 
 	// 予約情報をユーザーでフィルタして検索
 	public List<Reserve> findAllByCidOrderByDate(String cid);
+	
+	@Query(value = "SELECT * FROM t_reserve WHERE eid = :eid AND stop_flag IS NULL ORDER BY date", nativeQuery = true)
+    public List<Reserve> findAllByEidOrderByDate(@Param("eid") String eid);
+	
+	@Query(value = "SELECT * FROM t_reserve WHERE stop_flag IS NULL ORDER BY date", nativeQuery = true)
+	public List<Reserve> findAllByOrderByDate();
 
 	// 予約情報をコンシェルジュ、日付、時間でソートして検索
 	public Optional<Reserve> findAllByDateAndTimeAndEid(Date date, String time, String eid);
