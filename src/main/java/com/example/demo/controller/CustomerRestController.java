@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.Customer;
-import com.example.demo.entity.Employee;
 import com.example.demo.entity.Temporary;
 import com.example.demo.form.CustomerForm;
 import com.example.demo.form.CustomerLoginForm;
@@ -117,7 +115,7 @@ public class CustomerRestController {
 		
 		// 認証コードが期限切れならエラーを返す
 		LocalDateTime dateNow = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-		LocalDateTime dateExpire = verifyCustomer.getDate().plusMinutes(1);
+		LocalDateTime dateExpire = verifyCustomer.getDate().plusMinutes(3);
 		if(dateNow.isAfter(dateExpire)) {
 			temporaryRepository.delete(verifyCustomer);
 			responce = ResponceService.responceMaker("NotFound");
