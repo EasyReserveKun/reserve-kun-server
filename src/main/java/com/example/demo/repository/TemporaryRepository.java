@@ -24,9 +24,10 @@ public interface TemporaryRepository extends JpaRepository<Temporary, String> {
     public void generateTemp(String cid, String cname, String password, LocalDateTime date, String uuid);
     
     @Modifying
-    @Query(value = "SELECT * FROM m_remporary"
-    		+ "WHERE date + INTERVAL '?1 minutes' < NOW()", nativeQuery = true)
-    public void deleteExpire(String expire);
+    @Query(value = "DELETE FROM m_temporary "
+    		+ "WHERE date + INTERVAL '1 minutes'*?1 < NOW()", nativeQuery = true)
+    public void deleteExpire(int expire);
+
 	
     public Optional<Temporary> findByUuid(String uuid);
 }

@@ -18,7 +18,9 @@ public class ScheduleService {
 	
 	@Transactional
 	@Scheduled(cron = "0 0,30 * * * *")
-    public void scheduledDeleteExpire() {
-        temporaryRepository.deleteExpire(emConfig.getCodeExpiryMinutesString());
-    }
+   public void scheduledDeleteExpire() {
+		System.out.println("失効した仮登録情報を削除しました");
+       temporaryRepository.deleteExpire(emConfig.getCodeExpiryMinutes());
+   }
+
 }
