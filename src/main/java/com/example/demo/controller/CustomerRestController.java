@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.config.ExpireMinutesConfig;
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.Temporary;
 import com.example.demo.form.CustomerForm;
@@ -42,10 +43,8 @@ public class CustomerRestController {
 	private final LoginService loginService;
 	private final MailSenderServise msService;
 	private final SignupService signupService;
-	
-	@Value("${code.expire.minutes}")
-    private final String expireMinutes;
-	
+	private final ExpireMinutesConfig emConfig;
+
 	// 送信されたアカウント情報の照合を行うAPI
 	@CrossOrigin
 	@PostMapping("/login")
@@ -85,7 +84,6 @@ public class CustomerRestController {
 			temporaryRepository.generateTemp(customerForm.getCid(), customerForm.getCname(), customerForm.getPassword(),
 					LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS), code);
 			// 仮登録完了メールの送信
-			
 			String title = "【かんたん予約くん】仮登録のご案内";
 			String message = customerForm.getCname() + "様\n\n" 
 			+ "ACE社コンシェルジュデスク予約サービス「かんたん予約くん」にご登録いただきありがとうございます。\n\n"
@@ -94,10 +92,11 @@ public class CustomerRestController {
 			+ "当サービスをご利用いただくには「本登録」の手続きが必要です。\n"
 			+ "下記の認証コードを入力して手続きを完了してください。\n\n" 
 			+ "認証コード：" + code + "\n\n"
-			+ expireMinutes + "分以内に手続きが完了しない場合、仮登録が無効となります。\n"
+			+ emConfig.getCodeExpiryMinutesString() + "分以内に手続きが完了しない場合、仮登録が無効となります。\n"
 			+ "その際は再度はじめから登録をやり直してください。\n\n"
 			+ "※このメールは、送信専用メールアドレスから配信されています。\n"
 			+ "※ご返信いただいてもお答えできませんので、ご了承ください。";
+			
 			msService.sendSimpleMessage(customerForm.getCid(), title, message);
 			responce = ResponceService.responceMaker("Success");
 			responce.put("code", code);
@@ -126,7 +125,7 @@ public class CustomerRestController {
 		
 		// 認証コードが期限切れならエラーを返す
 		LocalDateTime dateNow = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-		LocalDateTime dateExpire = verifyCustomer.getDate().plusMinutes(Integer.parseInt(expireMinutes));
+		LocalDateTime dateExpire = verifyCustomer.getDate().plusMinutes(emConfig.getCodeExpiryMinutes());
 		if(dateNow.isAfter(dateExpire)) {
 			temporaryRepository.delete(verifyCustomer);
 			responce = ResponceService.responceMaker("NotFound");
