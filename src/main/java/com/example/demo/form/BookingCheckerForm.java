@@ -6,4 +6,5 @@ import lombok.Data;
 public class BookingCheckerForm {
 	private String cid;  // 顧客ID
 
+	private String eid;
 }
