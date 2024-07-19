@@ -9,8 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.example.demo.entity.Temporary;
 
-import jakarta.transaction.Transactional;
-
 // JpaRepositoryを拡張したCustomerエンティティ用のリポジトリインターフェース
 public interface TemporaryRepository extends JpaRepository<Temporary, String> {
 	
@@ -23,7 +21,12 @@ public interface TemporaryRepository extends JpaRepository<Temporary, String> {
                    "date = EXCLUDED.date, " +
                    "uuid = EXCLUDED.uuid",
            nativeQuery = true)
-    void generateTemp(String cid, String cname, String password, LocalDateTime date, String uuid);
+    public void generateTemp(String cid, String cname, String password, LocalDateTime date, String uuid);
+    
+    @Modifying
+    @Query(value = "SELECT * FROM events"
+    		+ "WHERE event_time + INTERVAL '3 minutes' < NOW()", nativeQuery = true)
+    public void deleteExpire();
 	
     public Optional<Temporary> findByUuid(String uuid);
 }

@@ -4,9 +4,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.example.demo.entity.Customer;
 import com.example.demo.entity.Temporary;
-import com.example.demo.form.CustomerForm;
 import com.example.demo.repository.TemporaryRepository;
 
 import lombok.AllArgsConstructor;
