@@ -136,7 +136,7 @@ public class CustomerRestController {
 		CustomerForm customerForm = new CustomerForm();
 		customerForm.setCid(verifyCustomer.getCid());
 		Customer existingUser = loginService.isAccountExist(customerForm);
-		if (existingUser == null) {
+		if (existingUser != null) {
 			responce = ResponceService.responceMaker("Duplicate");
 			return responce;
 		}
