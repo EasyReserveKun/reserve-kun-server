@@ -13,8 +13,6 @@ import org.springframework.data.repository.query.Param;
 import com.example.demo.entity.Reserve;
 import com.example.demo.entity.ReserveCompositeKey;
 
-import jakarta.transaction.Transactional;
-
 //--------------------------------------------------//
 //  ReserveRepository.java
 //  Reserve情報を扱う為のリポジトリクラス
@@ -62,9 +60,12 @@ public interface ReserveRepository extends JpaRepository<Reserve, ReserveComposi
 
 	public List<Reserve> findByDateAndTimeAndEid(Date date, String time, String eid);
 
-	@Transactional
-	@Modifying
-	@Query(value = "DELETE FROM t_reserve WHERE date = :date AND time = :time AND eid = :eid", nativeQuery = true)
-	int deleteByDateAndTimeAndEid(@Param("date") Date date, @Param("eid") String eid, @Param("time") String time);
+//	@Transactional
+//	@Modifying
+//	@Query(value = "DELETE FROM t_reserve WHERE date = :date AND time = :time AND eid = :eid", nativeQuery = true)
+//	int deleteByDateAndTimeAndEid(@Param("date") Date date, @Param("eid") String eid, @Param("time") String time);
 
+	@Modifying
+    @Query("DELETE FROM Reserve r WHERE r.date = :date AND r.eid = :eid AND r.time = :time AND r.stop_flag = '1'")
+    int deleteByDateAndTimeAndEidAndStopFlag(@Param("date") Date date, @Param("eid") String eid, @Param("time") String time);
 }
