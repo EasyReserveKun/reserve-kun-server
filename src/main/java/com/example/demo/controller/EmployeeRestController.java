@@ -105,7 +105,7 @@ public class EmployeeRestController {
 	private HashMap<String, Object> processSpecificTime(Date date, String eid, ReserveForm reserveForm) {
 		reserveForm.setTime(reserveForm.getTime()); // 明示的に時間を設定
 		Reserve reserve = reserveForm.insertEntity();
-		String error = reserveService.reserveExceptionCheck(reserveForm);
+		String error = reserveService.reserveExceptionChecker(reserveForm);
 
 		if (error.isEmpty()) {
 			reserveRepository.saveAndFlush(reserve);
