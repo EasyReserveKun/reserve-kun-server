@@ -21,7 +21,7 @@ import com.example.demo.entity.ReserveCompositeKey;
 public interface ReserveRepository extends JpaRepository<Reserve, ReserveCompositeKey> {
 
 	// 予約されている時間を日程と相談内容でフィルタして検索
-	@Query(value = "SELECT time FROM t_reserve WHERE date = :date AND eid = :eid", nativeQuery = true)
+	@Query(value = "SELECT r.time FROM t_reserve r JOIN m_employee e ON r.eid = e.eid WHERE r.date = :date AND r.eid = :eid", nativeQuery = true)
 	List<String> findAllTimesByDateAndEid(@Param("date") Date date, @Param("eid") String eid);
 
 	@Query(value = "SELECT time FROM t_reserve WHERE date = :date AND eid = :eid AND time = :time", nativeQuery = true)
