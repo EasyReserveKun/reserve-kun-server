@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -79,8 +80,8 @@ public class ReserveRestController {
     
     @CrossOrigin
    	@PostMapping("/employeeCheck")
-   	public List <Reserve> employeeCheck(@RequestBody BookingCheckerForm bookingCheckerForm) {
-    	List<Reserve> list;
+   	public List<Map<String, Object>> employeeCheck(@RequestBody BookingCheckerForm bookingCheckerForm) {
+    	List<Map<String, Object>> list;
     	if("all".equals(bookingCheckerForm.getEid())){
     		 list = reserveRepository.findAllByOrderByDate();
     	}else {
