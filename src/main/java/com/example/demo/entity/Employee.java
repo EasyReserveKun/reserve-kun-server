@@ -30,6 +30,6 @@ public class Employee {
     public String category;
     
     @Column(name = "stop_flag")
-    public String flag;
+    public String stop_flag;
 
 }
