@@ -5,9 +5,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.Customer;
-import com.example.demo.form.CustomerForm;
-import com.example.demo.form.CustomerLoginForm;
-import com.example.demo.repository.AdminRepository;
 import com.example.demo.repository.CustomerRepository;
 
 import lombok.AllArgsConstructor;

@@ -17,7 +17,6 @@ import com.example.demo.config.ExpireMinutesConfig;
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.Temporary;
 import com.example.demo.form.CustomerForm;
-import com.example.demo.form.CustomerLoginForm;
 import com.example.demo.repository.CustomerRepository;
 import com.example.demo.repository.TemporaryRepository;
 import com.example.demo.service.LoginService;
@@ -54,7 +53,7 @@ public class CustomerRestController {
 		HashMap<String, Object> responce = new HashMap<>();
 		String cid = (String) requestBody.get("cid");
 		String password = (String) requestBody.get("password");
-
+		
 		// 存在しないアカウントならログイン失敗
 		Customer loginUser = loginService.findExistAccount(cid, password);
 		if (loginUser == null) {
@@ -69,8 +68,8 @@ public class CustomerRestController {
 		}
 
 		// ログイン成功時の処理
-		String token = tokenService.generateToken(loginUser.getCname(), loginUser.getCid(),
-				Objects.nonNull(loginUser.getAdmin()));
+		Boolean isAdmin = (loginUser.getAdmin()!=null) ? true : false;
+		String token = tokenService.generateToken(loginUser.getCname(), loginUser.getCid(), isAdmin);
 		responce = ResponceService.responceMaker("Success");
 		responce.put("token", token);
 		return responce;

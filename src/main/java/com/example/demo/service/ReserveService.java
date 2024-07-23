@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.sql.Date;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -16,6 +17,20 @@ public class ReserveService {
 
 	private final ReserveRepository reserveRepository;
 
+	public String reserveExceptionCheck(Date date, String time, String eid, String cid) {
+		Optional<Reserve> duplicated = reserveRepository.findAllByDateAndTimeAndEid(
+				date, time, eid);
+		Optional<Reserve> doubled = reserveRepository.findAllByDateAndTimeAndCid(
+				date, time, cid);
+		if (!duplicated.isEmpty()) {
+			return "Duplicated";
+		}
+		if (!doubled.isEmpty()) {
+			return "Doubled";
+		}
+		return "";
+	}
+	
 	public String reserveExceptionCheck(ReserveForm reserveForm) {
 		Optional<Reserve> duplicated = reserveRepository.findAllByDateAndTimeAndEid(
 				reserveForm.getDate(), reserveForm.getTime(), reserveForm.getEid());

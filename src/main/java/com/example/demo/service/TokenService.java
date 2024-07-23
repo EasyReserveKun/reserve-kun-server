@@ -2,8 +2,6 @@ package com.example.demo.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
@@ -15,12 +13,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Service
-@AllArgsConstructor
-public class TokenService {
-	private final CustomerRepository customerRepository;
-    private String secret = System.getenv("TOKEN_SECRET"); // 環境変数から秘密鍵を取得
+import javax.crypto.SecretKey;
 
+@Service
+public class TokenService {
+
+	private final CustomerRepository customerRepository;
+	
+    public TokenService(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
+    
+    private final SecretKey secret = Jwts.SIG.HS256.key().build(); // 環境変数から秘密鍵を取得
+    
     /**
      * トークンからユーザー名を抽出する
      * @param token JWTトークン
@@ -67,7 +72,11 @@ public class TokenService {
      * @return クレーム
      */
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return Jwts.parser()
+        		.verifyWith(secret)
+        		.build()
+        		.parseSignedClaims(token)
+        		.getPayload();
     }
 
     /**
@@ -101,11 +110,11 @@ public class TokenService {
      */
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 48)) // 48時間の有効期間
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .claims(claims)
+                .subject(subject)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 48)) // 48時間の有効期間
+                .signWith(secret)
                 .compact();
     }
 

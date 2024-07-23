@@ -14,9 +14,11 @@ import com.example.demo.entity.Reserve;
 import com.example.demo.form.BookingCheckerForm;
 import com.example.demo.form.ReserveCheckForm;
 import com.example.demo.form.ReserveForm;
+import com.example.demo.form.ReserveFormTemp;
 import com.example.demo.repository.ReserveRepository;
 import com.example.demo.service.ReserveService;
 import com.example.demo.service.ResponceService;
+import com.example.demo.service.TokenService;
 
 import lombok.AllArgsConstructor;
 
@@ -30,92 +32,102 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/reserve")
 public class ReserveRestController {
 
-	 // ReserveRepositoryのインジェクション
-    private final ReserveRepository reserveRepository;
-    private final ReserveService reserveService;
+	// ReserveRepositoryのインジェクション
+	private final ReserveRepository reserveRepository;
+	private final ReserveService reserveService;
+	private final TokenService tokenService;
 
-    // 予約情報の追加--------------------------------------------------
-    @CrossOrigin
-    @PostMapping("/insert")
-    public HashMap<String, Object> insert(@RequestBody ReserveForm reserveForm) {
-    	HashMap<String, Object> responce = new HashMap<>();
-        Reserve reserve = reserveForm.getEntity();
+	// 予約情報の追加--------------------------------------------------
+	@CrossOrigin
+	@PostMapping("/insert")
+	public HashMap<String, Object> insert(@RequestBody ReserveFormTemp reserveForm) {
+		HashMap<String, Object> responce = new HashMap<>();
+		String cid = null;
+		try {
+			cid = tokenService.extractUserId(reserveForm.getToken());
 
-        // エラーチェック
-        String error = reserveService.reserveExceptionCheck(reserveForm);
-        if(error.isEmpty()) {
-            // データベースへの書き込み
-            reserveRepository.saveAndFlush(reserve);
-            responce = ResponceService.responceMaker("Success");
-        } else {
-        	responce = ResponceService.responceMaker(error);
-        }
+		} catch (Exception e) {
+			responce = ResponceService.responceMaker("Denied");
+			return responce;
+		}
+
+		Reserve reserve = reserveForm.getEntity();
+		reserve.setCid(cid);
+
+		// エラーチェック
+		String error = reserveService.reserveExceptionCheck(reserveForm.getDate(), reserveForm.getTime(),
+				reserveForm.getEid(), cid);
+		if (error.isEmpty()) {
+			// データベースへの書き込み
+			reserveRepository.saveAndFlush(reserve);
+			responce = ResponceService.responceMaker("Success");
+		} else {
+			responce = ResponceService.responceMaker("Error");
+		}
 
 		return responce;
-    }
+	}
 
-    // 予約可能な時間の確認--------------------------------------------------
-    @CrossOrigin
-    @PostMapping("/available")
-    public List<String> available(@RequestBody ReserveCheckForm reserveCheckForm) {
-        // @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
+	// 予約可能な時間の確認--------------------------------------------------
+	@CrossOrigin
+	@PostMapping("/available")
+	public List<String> available(@RequestBody ReserveCheckForm reserveCheckForm) {
+		// @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
 
-        // 日付と社員IDに基づいてリポジトリから時間のリストを取得します
-        List<String> list = reserveRepository.findAllTimesByDateAndEid(
-            reserveCheckForm.getDate(),  // フォームオブジェクトから日付を取得します
-            reserveCheckForm.getEid()    // フォームオブジェクトから社員IDを取得します
-        );
-        
-        return list;  // 時間のリストをレスポンスとして返します
-    }
+		// 日付と社員IDに基づいてリポジトリから時間のリストを取得します
+		List<String> list = reserveRepository.findAllTimesByDateAndEid(reserveCheckForm.getDate(), // フォームオブジェクトから日付を取得します
+				reserveCheckForm.getEid() // フォームオブジェクトから社員IDを取得します
+		);
 
-    //--------------------------------------------------
-    @CrossOrigin
+		return list; // 時間のリストをレスポンスとして返します
+	}
+
+	// --------------------------------------------------
+	@CrossOrigin
 	@PostMapping("/check")
-	public List <Reserve> check(@RequestBody BookingCheckerForm bookingCheckerForm) {
-		List<Reserve> list = reserveRepository.findAllByCidOrderByDate(bookingCheckerForm.getCid());
-		
+	public List<Reserve> check(@RequestBody HashMap<String, String> requestBody) {
+		String token = requestBody.get("token");
+		List<Reserve> list = reserveRepository.findAllByCidOrderByDate(tokenService.extractUserId(token));
 		return list;
 	}
-    
-    @CrossOrigin
-   	@PostMapping("/employeeCheck")
-   	public List<Map<String, Object>> employeeCheck(@RequestBody BookingCheckerForm bookingCheckerForm) {
-    	List<Map<String, Object>> list;
-    	if("all".equals(bookingCheckerForm.getEid())){
-    		 list = reserveRepository.findAllByOrderByDate();
-    	}else {
-    		 list = reserveRepository.findAllByEidOrderByDate(bookingCheckerForm.getEid());
-    	}
-   		return list;
-   	}
-    
-    @CrossOrigin
+
+	@CrossOrigin
+	@PostMapping("/employeeCheck")
+	public List<Map<String, Object>> employeeCheck(@RequestBody BookingCheckerForm bookingCheckerForm) {
+		List<Map<String, Object>> list;
+		if ("all".equals(bookingCheckerForm.getEid())) {
+			list = reserveRepository.findAllByOrderByDate();
+		} else {
+			list = reserveRepository.findAllByEidOrderByDate(bookingCheckerForm.getEid());
+		}
+		return list;
+	}
+
+	@CrossOrigin
 	@PostMapping("/cancel")
 	public String cancel(@RequestBody ReserveForm reserveForm) {
-    	
-    	List<Reserve> reservations = 
-    			reserveRepository.findByDateAndTimeAndEid(reserveForm.getDate(), reserveForm.getTime(), reserveForm.getEid());
-        if (!reservations.isEmpty()) {
-            reserveRepository.deleteAll(reservations);
-            return "予約をキャンセルしました";
-        } else {
-            return "該当する予約が見つかりませんでした";
-        }
+
+		List<Reserve> reservations = reserveRepository.findByDateAndTimeAndEid(reserveForm.getDate(),
+				reserveForm.getTime(), reserveForm.getEid());
+		if (!reservations.isEmpty()) {
+			reserveRepository.deleteAll(reservations);
+			return "予約をキャンセルしました";
+		} else {
+			return "該当する予約が見つかりませんでした";
+		}
 	}
-    
-    @CrossOrigin
-    @PostMapping("/unavailable")
-    public List<String> unavailable(@RequestBody ReserveCheckForm reserveCheckForm) {
-        // @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
 
-        // 日付と社員IDに基づいてリポジトリから時間のリストを取得します
-        List<String> list = reserveRepository.findAllTimesByDateAndEidAndFlag(
-            reserveCheckForm.getDate(),  // フォームオブジェクトから日付を取得します
-            reserveCheckForm.getEid(),// フォームオブジェクトから社員IDを取得します
-            "1"//予約停止フラグ
-        );
+	@CrossOrigin
+	@PostMapping("/unavailable")
+	public List<String> unavailable(@RequestBody ReserveCheckForm reserveCheckForm) {
+		// @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
 
-        return list;  // 時間のリストをレスポンスとして返します
-    }
+		// 日付と社員IDに基づいてリポジトリから時間のリストを取得します
+		List<String> list = reserveRepository.findAllTimesByDateAndEidAndFlag(reserveCheckForm.getDate(), // フォームオブジェクトから日付を取得します
+				reserveCheckForm.getEid(), // フォームオブジェクトから社員IDを取得します
+				"1"// 予約停止フラグ
+		);
+
+		return list; // 時間のリストをレスポンスとして返します
+	}
 }
