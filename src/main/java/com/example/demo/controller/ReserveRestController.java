@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.entity.Customer;
 import com.example.demo.entity.Reserve;
 import com.example.demo.form.BookingCheckerForm;
 import com.example.demo.form.ReserveCheckForm;
@@ -129,5 +131,16 @@ public class ReserveRestController {
 		);
 
 		return list; // 時間のリストをレスポンスとして返します
+	}
+	
+	@CrossOrigin
+	@GetMapping("reservelist")
+	public HashMap<String, Object> customerlist() {
+		HashMap<String, Object> responce = new HashMap<>();
+		List<Reserve> reserveList = reserveRepository.findAll();
+		responce = ResponceService.responceMaker("Success");
+		responce.put("results", reserveList);
+		responce.put("type", "Customer");
+		return responce;
 	}
 }
