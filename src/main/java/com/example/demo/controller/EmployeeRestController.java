@@ -149,26 +149,35 @@ public class EmployeeRestController {
 	@PostMapping("stopAll")
 	public String stopAll(@RequestBody EmployeeForm employeeForm) {
 
-		int count = employeeRepository.updateSetFlag(employeeForm.getEid());
-
-		if (count == 1) {
-			return "受付を停止します";
+		System.out.println(employeeForm.getEid());
+		if ("".equals(employeeForm.getEid())) {
+			return "従業員を選択してください";
 		} else {
-			return "エラーが発生しました";
+			int count = employeeRepository.updateSetFlag(employeeForm.getEid());
+
+			if (count == 1) {
+				return "受付を停止します";
+			} else {
+				return "エラーが発生しました";
+			}
 		}
 	}
-	
+
 	@CrossOrigin
 	@Transactional
 	@PostMapping("reactivate")
 	public String reactivate(@RequestBody EmployeeForm employeeForm) {
 
-		int count = employeeRepository.updateDeleteFlag(employeeForm.getEid());
-
-		if (count == 1) {
-			return "受付を開始します";
+		if ("".equals(employeeForm.getEid())) {
+			return "従業員を選択してください";
 		} else {
-			return "エラーが発生しました";
+			int count = employeeRepository.updateDeleteFlag(employeeForm.getEid());
+
+			if (count == 1) {
+				return "受付を開始します";
+			} else {
+				return "エラーが発生しました";
+			}
 		}
 	}
 }
