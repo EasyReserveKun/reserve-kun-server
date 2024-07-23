@@ -33,7 +33,9 @@ public interface ReserveRepository extends JpaRepository<Reserve, ReserveComposi
 			@Param("stop_flag") String stop_flag);
 
 	// 予約情報をユーザーでフィルタして検索
-	public List<Reserve> findAllByCidOrderByDate(String cid);
+	@Query(value = "SELECT * FROM t_reserve r WHERE r.cid = :cid ORDER BY r.date ASC, r.time ASC", nativeQuery = true)
+	List<Reserve> findAllByCidOrderByDate(@Param("cid") String cid);
+	//public List<Reserve> findAllByCidOrderByDate(String cid);
 
 	@Query(value = "SELECT r.date AS date, r.time AS time, r.eid AS eid, r.cid AS cid, c.cname AS cname, m.ename AS ename, r.etc AS etc, r.stop_flag AS stopFlag "
 			+
@@ -41,7 +43,7 @@ public interface ReserveRepository extends JpaRepository<Reserve, ReserveComposi
 			"JOIN m_customer c ON r.cid = c.cid " +
 			"JOIN m_employee m ON r.eid = m.eid " +
 			"WHERE r.stop_flag IS NULL " +
-			"AND r.eid = :eid ORDER BY date", nativeQuery = true)
+			"AND r.eid = :eid ORDER BY r.date, r.time", nativeQuery = true)
 	public List<Map<String, Object>> findAllByEidOrderByDate(@Param("eid") String eid);
 
 	@Query(value = "SELECT r.date AS date, r.time AS time, r.eid AS eid, r.cid AS cid, c.cname AS cname, m.ename AS ename, r.etc AS etc, r.stop_flag AS stopFlag "
@@ -49,7 +51,7 @@ public interface ReserveRepository extends JpaRepository<Reserve, ReserveComposi
 			"FROM t_reserve r " +
 			"JOIN m_customer c ON r.cid = c.cid " +
 			"JOIN m_employee m ON r.eid = m.eid " +
-			"WHERE r.stop_flag IS NULL ORDER BY date", nativeQuery = true)
+			"WHERE r.stop_flag IS NULL ORDER BY r.date, r.time", nativeQuery = true)
 	public List<Map<String, Object>> findAllByOrderByDate();
 
 	// 予約情報をコンシェルジュ、日付、時間でソートして検索
@@ -60,12 +62,13 @@ public interface ReserveRepository extends JpaRepository<Reserve, ReserveComposi
 
 	public List<Reserve> findByDateAndTimeAndEid(Date date, String time, String eid);
 
-//	@Transactional
-//	@Modifying
-//	@Query(value = "DELETE FROM t_reserve WHERE date = :date AND time = :time AND eid = :eid", nativeQuery = true)
-//	int deleteByDateAndTimeAndEid(@Param("date") Date date, @Param("eid") String eid, @Param("time") String time);
+	//	@Transactional
+	//	@Modifying
+	//	@Query(value = "DELETE FROM t_reserve WHERE date = :date AND time = :time AND eid = :eid", nativeQuery = true)
+	//	int deleteByDateAndTimeAndEid(@Param("date") Date date, @Param("eid") String eid, @Param("time") String time);
 
 	@Modifying
-    @Query("DELETE FROM Reserve r WHERE r.date = :date AND r.eid = :eid AND r.time = :time AND r.stop_flag = '1'")
-    int deleteByDateAndTimeAndEidAndStopFlag(@Param("date") Date date, @Param("eid") String eid, @Param("time") String time);
+	@Query("DELETE FROM Reserve r WHERE r.date = :date AND r.eid = :eid AND r.time = :time AND r.stop_flag = '1'")
+	int deleteByDateAndTimeAndEidAndStopFlag(@Param("date") Date date, @Param("eid") String eid,
+			@Param("time") String time);
 }
