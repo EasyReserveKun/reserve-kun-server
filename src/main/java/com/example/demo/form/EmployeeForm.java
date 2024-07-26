@@ -5,5 +5,5 @@ import lombok.Data;
 @Data  
 public class EmployeeForm {
 
-	public Integer eid;
+	public String eid;
 }

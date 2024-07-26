@@ -24,5 +24,11 @@ public interface CustomerRepository extends JpaRepository<Customer, String> {
 
     public Optional<Customer> findByCid(String cid);
 
-	public  Optional<Customer> findByCnameAndCid(String cname, String cid);
+	  public  Optional<Customer> findByCnameAndCid(String cname, String cid);
+    
+    @Query(value = "DELETE FROM m_customer WHERE cid = :cid", nativeQuery = true)
+    public void deleteByCid(String cid);
+
+
 }
+

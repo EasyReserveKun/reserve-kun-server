@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.Employee;
 import com.example.demo.entity.Reserve;
+import com.example.demo.form.EmployeeForm;
 import com.example.demo.form.ReserveForm;
 import com.example.demo.repository.EmployeeRepository;
 import com.example.demo.repository.ReserveRepository;
@@ -52,82 +53,131 @@ public class EmployeeRestController {
 	@PostMapping("stop")
 	public HashMap<String, Object> stop(@RequestBody ReserveForm reserveForm) {
 
-	    String[] timeArray = {
-	        "10:00", "11:00", "12:00", "13:00", "14:00", "15:00",
-	        "16:00", "17:00", "18:00", "19:00"
-	    };
+		String[] timeArray = {
+				"10:00", "11:00", "12:00", "13:00", "14:00", "15:00",
+				"16:00", "17:00", "18:00", "19:00"
+		};
 
-	    HashMap<String, Object> response = new HashMap<>();
-	    Date date = reserveForm.getDate();
-	    String time = reserveForm.getTime();
-	    String eid = reserveForm.getEid();
+		HashMap<String, Object> response = new HashMap<>();
+		Date date = reserveForm.getDate();
+		String time = reserveForm.getTime();
+		String eid = reserveForm.getEid();
 
-	    if ("すべての時間".equals(time)) {
-	        response = processAllTimes(date, eid, timeArray, reserveForm);
-	    } else {
-	        response = processSpecificTime(date, eid, reserveForm);
-	    }
+		if ("すべての時間".equals(time)) {
+			response = processAllTimes(date, eid, timeArray, reserveForm);
+		} else {
+			response = processSpecificTime(date, eid, reserveForm);
+		}
 
-	    return response;
+		return response;
 	}
 
-	private HashMap<String, Object> processAllTimes(Date date, String eid, String[] timeArray, ReserveForm reserveForm) {
-	    boolean isReserved = false;
-	    HashMap<String, Object> response = new HashMap<>();
-	    for (String time : timeArray) {
-	        if (reserveRepository.findAllTimesByDateAndEidAndTime(date, eid, time) == null) {
-	            reserveForm.setTime(time);
-	            System.out.println("Setting time to: " + time);
+	private HashMap<String, Object> processAllTimes(Date date, String eid, String[] timeArray,
+			ReserveForm reserveForm) {
+		boolean isReserved = false;
+		HashMap<String, Object> response = new HashMap<>();
+		for (String time : timeArray) {
+			if (reserveRepository.findAllTimesByDateAndEidAndTime(date, eid, time) == null) {
+				reserveForm.setTime(time);
+				System.out.println("Setting time to: " + time);
 
-	            Reserve reserve = reserveForm.insertEntity();
-	            String error = reserveService.reserveEmployeeCheck(reserveForm);
+				Reserve reserve = reserveForm.insertEntity();
+				String error = reserveService.reserveEmployeeCheck(reserveForm);
 
-	            if (error.isEmpty()) {
-	                reserveRepository.save(reserve);
-	                isReserved = true;
-	                response = ResponceService.responceMaker("Success");
-	            } else {
-	                System.out.println(error);
-	                response = ResponceService.responceMaker(error);
-	                isReserved = true;
-	            }
-	        }
-	    }
-	    if (!isReserved) {
-	        System.out.println("No available time slots");
-	        response = ResponceService.responceMaker("No available time slots");
-	    }
-	    return response;
+				if (error.isEmpty()) {
+					reserveRepository.save(reserve);
+					isReserved = true;
+					response = ResponceService.responceMaker("Success");
+				} else {
+					System.out.println(error);
+					response = ResponceService.responceMaker(error);
+					isReserved = true;
+				}
+			}
+		}
+		if (!isReserved) {
+			System.out.println("No available time slots");
+			response = ResponceService.responceMaker("No available time slots");
+		}
+		return response;
 	}
 
 	private HashMap<String, Object> processSpecificTime(Date date, String eid, ReserveForm reserveForm) {
-	    reserveForm.setTime(reserveForm.getTime()); // 明示的に時間を設定
-	    Reserve reserve = reserveForm.insertEntity();
-	    String error = reserveService.reserveExceptionCheck(reserveForm);
+		reserveForm.setTime(reserveForm.getTime()); // 明示的に時間を設定
+		Reserve reserve = reserveForm.insertEntity();
+		String error = reserveService.reserveExceptionChecker(reserveForm);
 
-	    if (error.isEmpty()) {
-	        reserveRepository.saveAndFlush(reserve);
-	        return ResponceService.responceMaker("Success");
-	    } else {
-	        return ResponceService.responceMaker(error);
-	    }
+		if (error.isEmpty()) {
+			reserveRepository.saveAndFlush(reserve);
+			return ResponceService.responceMaker("Success");
+		} else {
+			return ResponceService.responceMaker(error);
+		}
 	}
 
 	@CrossOrigin
 	@Transactional
 	@PostMapping("reactivation")
 	public String reactivation(@RequestBody ReserveForm reserveForm) {
+		Date date = reserveForm.getDate();
+		String time = reserveForm.getTime();
+		String eid = reserveForm.getEid();
 
-		int count = reserveRepository.deleteByDateAndTimeAndEid(
-				reserveForm.getDate(), // フォームオブジェクトから日付を取得します
-				reserveForm.getEid(), // フォームオブジェクトから社員IDを取得します
-				reserveForm.getTime());
-
-		if (count == 1) {
-			return "受付を開始します";
+		if ("すべての時間".equals(time)) {
+			int count = 0;
+			for (String timeSlot : new String[] { "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00",
+					"17:00", "18:00", "19:00" }) {
+				count += reserveRepository.deleteByDateAndTimeAndEidAndStopFlag(date, eid, timeSlot);
+			}
+			if (count > 0) {
+				return "すべての時間の受付を開始します";
+			} else {
+				return "エラーが発生しました";
+			}
 		} else {
+			int count = reserveRepository.deleteByDateAndTimeAndEidAndStopFlag(date, eid, time);
+			if (count == 1) {
+				return "受付を開始します";
+			} else {
+				return "エラーが発生しました";
+			}
+		}
+	}
 
-			return "エラーが発生しました";
+	@CrossOrigin
+	@Transactional
+	@PostMapping("stopAll")
+	public String stopAll(@RequestBody EmployeeForm employeeForm) {
+
+		System.out.println(employeeForm.getEid());
+		if ("".equals(employeeForm.getEid())) {
+			return "従業員を選択してください";
+		} else {
+			int count = employeeRepository.updateSetFlag(employeeForm.getEid());
+
+			if (count == 1) {
+				return "受付を停止します";
+			} else {
+				return "エラーが発生しました";
+			}
+		}
+	}
+
+	@CrossOrigin
+	@Transactional
+	@PostMapping("reactivate")
+	public String reactivate(@RequestBody EmployeeForm employeeForm) {
+
+		if ("".equals(employeeForm.getEid())) {
+			return "従業員を選択してください";
+		} else {
+			int count = employeeRepository.updateDeleteFlag(employeeForm.getEid());
+
+			if (count == 1) {
+				return "受付を開始します";
+			} else {
+				return "エラーが発生しました";
+			}
 		}
 	}
 }
