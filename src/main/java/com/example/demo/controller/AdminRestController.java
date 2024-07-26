@@ -34,29 +34,35 @@ public class AdminRestController {
 	@PostMapping("/login")
 	public HashMap<String, Object> login(@RequestBody HashMap<String, Object> requestBody) {
 		HashMap<String, Object> responce = new HashMap<>();
-		String cid = (String) requestBody.get("cid");
-		String password = (String) requestBody.get("password");
+		try {
+			String cid = (String) requestBody.get("cid");
+			String password = (String) requestBody.get("password");
 
-		// 存在しないアカウントならログイン失敗
-		Customer loginUser = loginService.findExistAccount(cid, password);
-		if (loginUser == null) {
-			responce = ResponceService.responceMaker("NotExist");
+			// 存在しないアカウントならログイン失敗
+			Customer loginUser = loginService.findExistAccount(cid, password);
+			if (loginUser == null) {
+				responce = ResponceService.responceMaker("NotExist");
+				return responce;
+			}
+
+			// アカウントが管理者用でなければログイン失敗
+			Boolean isAdmin = (Objects.isNull(loginUser.getAdmin())) ? true : false;
+			if (!isAdmin) {
+				responce = ResponceService.responceMaker("Denied");
+				return responce;
+			}
+
+			// ログイン成功時の処理
+			String token = tokenService.generateToken(loginUser.getCname(), loginUser.getCid(),
+					isAdmin);
+			responce = ResponceService.responceMaker("Success");
+			responce.put("token", token);
+			return responce;
+		} catch (Exception e) {
+			responce = ResponceService.responceMaker("Error");
+			System.err.println(e);
 			return responce;
 		}
-		
-		// アカウントが管理者用でなければログイン失敗
-		if (Objects.isNull(loginUser.getAdmin())) {
-			responce = ResponceService.responceMaker("Denied");
-			return responce;
-		}
-
-		// ログイン成功時の処理
-		String token = tokenService.generateToken(loginUser.getCname(), loginUser.getCid(),
-				Objects.nonNull(loginUser.getAdmin()));
-		responce = ResponceService.responceMaker("Success");
-		responce.put("token", token);
-		return responce;
 	}
-
 
 }

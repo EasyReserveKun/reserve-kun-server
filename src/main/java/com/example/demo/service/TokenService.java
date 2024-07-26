@@ -3,6 +3,7 @@ package com.example.demo.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.Customer;
@@ -24,7 +25,10 @@ public class TokenService {
         this.customerRepository = customerRepository;
     }
     
-    private final SecretKey secret = Jwts.SIG.HS256.key().build(); // 環境変数から秘密鍵を取得
+    private final SecretKey secret = Jwts.SIG.HS256.key().build();
+    
+    //@Value("${TOKEN_SECRET}")
+    //private SecretKey secret;
     
     /**
      * トークンからユーザー名を抽出する
@@ -135,7 +139,6 @@ public class TokenService {
     	} catch (Exception e) {
     		return false;
     	}
-    	
     	// 該当する顧客情報が見つからなければfalse
     	Optional<Customer> customer = customerRepository.findByCnameAndCid(name , id);
         if(customer.isEmpty()) {
@@ -143,7 +146,7 @@ public class TokenService {
         }
         
         // トークンが期限切れならfalse
-        if(!isTokenExpired(token)) {
+        if(isTokenExpired(token)) {
         	return false;
         }
         

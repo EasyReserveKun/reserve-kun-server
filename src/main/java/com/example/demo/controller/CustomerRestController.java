@@ -51,6 +51,7 @@ public class CustomerRestController {
 	@PostMapping("/login")
 	public HashMap<String, Object> login(@RequestBody HashMap<String, Object> requestBody) {
 		HashMap<String, Object> responce = new HashMap<>();
+		try {
 		String cid = (String) requestBody.get("cid");
 		String password = (String) requestBody.get("password");
 		
@@ -62,17 +63,22 @@ public class CustomerRestController {
 		}
 		
 		// アカウントが管理者用ならログイン失敗
-		if (Objects.nonNull(loginUser.getAdmin())) {
+		Boolean isAdmin = (Objects.isNull(loginUser.getAdmin())) ? true : false;
+		if (isAdmin) {
 			responce = ResponceService.responceMaker("Denied");
 			return responce;
 		}
 
 		// ログイン成功時の処理
-		Boolean isAdmin = (loginUser.getAdmin()!=null) ? true : false;
 		String token = tokenService.generateToken(loginUser.getCname(), loginUser.getCid(), isAdmin);
 		responce = ResponceService.responceMaker("Success");
 		responce.put("token", token);
 		return responce;
+		} catch (Exception e) {
+			responce = ResponceService.responceMaker("Error");
+			System.err.println(e);
+			return responce;
+		}
 	}
 
 	// 登録情報を受け取り、認証コードを送信

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.entity.Customer;
 import com.example.demo.entity.Reserve;
 import com.example.demo.form.BookingCheckerForm;
 import com.example.demo.form.ReserveCheckForm;
@@ -132,7 +131,7 @@ public class ReserveRestController {
 
 		return list; // 時間のリストをレスポンスとして返します
 	}
-	
+
 	@CrossOrigin
 	@GetMapping("reservelist")
 	public HashMap<String, Object> customerlist() {
