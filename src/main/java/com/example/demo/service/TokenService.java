@@ -139,7 +139,7 @@ public class TokenService {
     	} catch (Exception e) {
     		return false;
     	}
-    	
+
     	// 該当する顧客情報が見つからなければfalse
     	Optional<Customer> customer = customerRepository.findByCnameAndCid(name , id);
         if(customer.isEmpty()) {
@@ -147,7 +147,7 @@ public class TokenService {
         }
         
         // トークンが期限切れならfalse
-        if(!isTokenExpired(token)) {
+        if(isTokenExpired(token)) {
         	return false;
         }
         

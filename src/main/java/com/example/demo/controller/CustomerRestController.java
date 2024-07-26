@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,13 +18,13 @@ import com.example.demo.config.ExpireMinutesConfig;
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.Temporary;
 import com.example.demo.form.CustomerForm;
-import com.example.demo.form.CustomerLoginForm;
 import com.example.demo.repository.CustomerRepository;
 import com.example.demo.repository.TemporaryRepository;
 import com.example.demo.service.LoginService;
 import com.example.demo.service.MailSenderServise;
 import com.example.demo.service.ResponceService;
 import com.example.demo.service.SignupService;
+import com.example.demo.service.TokenService;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -40,27 +41,45 @@ public class CustomerRestController {
 
 	private final CustomerRepository customerRepository;
 	private final TemporaryRepository temporaryRepository;
+	private final TokenService tokenService;
 	private final LoginService loginService;
 	private final MailSenderServise msService;
 	private final SignupService signupService;
 	private final ExpireMinutesConfig emConfig;
 
-	// 送信されたアカウント情報の照合を行うAPI
+	// ログイン情報を受け取り照合を行うAPI
 	@CrossOrigin
 	@PostMapping("/login")
-	public HashMap<String, Object> login(@RequestBody CustomerLoginForm customerLoginForm) {
-		Customer loginUser = loginService.isAccountExist(customerLoginForm);
+	public HashMap<String, Object> login(@RequestBody HashMap<String, Object> requestBody) {
 		HashMap<String, Object> responce = new HashMap<>();
-		HashMap<String, Object> results = new HashMap<>();
-		if (loginUser != null) {
-			responce = ResponceService.responceMaker("Success");
-			results.put("mail", loginUser.getCid());
-			results.put("name", loginUser.getCname());
-			responce.put("results", results);
-		} else {
-			responce = ResponceService.responceMaker("Error");
+		try {
+		String cid = (String) requestBody.get("cid");
+		String password = (String) requestBody.get("password");
+		
+		// 存在しないアカウントならログイン失敗
+		Customer loginUser = loginService.findExistAccount(cid, password);
+		if (loginUser == null) {
+			responce = ResponceService.responceMaker("NotExist");
+			return responce;
 		}
+		
+		// アカウントが管理者用ならログイン失敗
+		Boolean isAdmin = (Objects.isNull(loginUser.getAdmin())) ? true : false;
+		if (isAdmin) {
+			responce = ResponceService.responceMaker("Denied");
+			return responce;
+		}
+
+		// ログイン成功時の処理
+		String token = tokenService.generateToken(loginUser.getCname(), loginUser.getCid(), isAdmin);
+		responce = ResponceService.responceMaker("Success");
+		responce.put("token", token);
 		return responce;
+		} catch (Exception e) {
+			responce = ResponceService.responceMaker("Error");
+			System.err.println(e);
+			return responce;
+		}
 	}
 
 	// 登録情報を受け取り、認証コードを送信
@@ -73,7 +92,7 @@ public class CustomerRestController {
 		String code = generateCode();
 
 		// 既に同じIDで登録されている場合はエラーを返す
-		Customer signupUser = loginService.isAccountExist(customerForm);
+		Customer signupUser = loginService.findExistAccount(customerForm.getCid(), customerForm.getPassword());
 		if (signupUser != null) {
 			responce = ResponceService.responceMaker("Duplicate");
 			return responce;
@@ -85,18 +104,13 @@ public class CustomerRestController {
 					LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS), code);
 			// 仮登録完了メールの送信
 			String title = "【かんたん予約くん】仮登録のご案内";
-			String message = customerForm.getCname() + "様\n\n" 
-			+ "ACE社コンシェルジュデスク予約サービス「かんたん予約くん」にご登録いただきありがとうございます。\n\n"
-			+ "会員情報の「仮登録」を受け付けました。\n"
-			+ "※登録はまだ完了していません。\n\n"
-			+ "当サービスをご利用いただくには「本登録」の手続きが必要です。\n"
-			+ "下記の認証コードを入力して手続きを完了してください。\n\n" 
-			+ "認証コード：" + code + "\n\n"
-			+ emConfig.getCodeExpiryMinutesString() + "分以内に手続きが完了しない場合、仮登録が無効となります。\n"
-			+ "その際は再度はじめから登録をやり直してください。\n\n"
-			+ "※このメールは、送信専用メールアドレスから配信されています。\n"
-			+ "※ご返信いただいてもお答えできませんので、ご了承ください。";
-			
+			String message = customerForm.getCname() + "様\n\n" + "ACE社コンシェルジュデスク予約サービス「かんたん予約くん」にご登録いただきありがとうございます。\n\n"
+					+ "会員情報の「仮登録」を受け付けました。\n" + "※登録はまだ完了していません。\n\n" + "当サービスをご利用いただくには「本登録」の手続きが必要です。\n"
+					+ "下記の認証コードを入力して手続きを完了してください。\n\n" + "認証コード：" + code + "\n\n"
+					+ emConfig.getCodeExpiryMinutesString() + "分以内に手続きが完了しない場合、仮登録が無効となります。\n"
+					+ "その際は再度はじめから登録をやり直してください。\n\n" + "※このメールは、送信専用メールアドレスから配信されています。\n"
+					+ "※ご返信いただいてもお答えできませんので、ご了承ください。";
+
 			msService.sendSimpleMessage(customerForm.getCid(), title, message);
 			responce = ResponceService.responceMaker("Success");
 			responce.put("code", code);
@@ -122,37 +136,35 @@ public class CustomerRestController {
 			responce = ResponceService.responceMaker("NotFound");
 			return responce;
 		}
-		
+
 		// 認証コードが期限切れならエラーを返す
 		LocalDateTime dateNow = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 		LocalDateTime dateExpire = verifyCustomer.getDate().plusMinutes(emConfig.getCodeExpiryMinutes());
-		if(dateNow.isAfter(dateExpire)) {
+		if (dateNow.isAfter(dateExpire)) {
 			temporaryRepository.delete(verifyCustomer);
 			responce = ResponceService.responceMaker("NotFound");
 			return responce;
 		}
-		
+
 		// 既に同じIDで登録されている場合はエラーを返す
-		CustomerForm customerForm = new CustomerForm();
-		customerForm.setCid(verifyCustomer.getCid());
-		Customer existingUser = loginService.isAccountExist(customerForm);
+		Customer existingUser = loginService.findExistAccountFromCid(verifyCustomer.getCid());
 		if (existingUser != null) {
 			responce = ResponceService.responceMaker("Duplicate");
 			return responce;
 		}
-		
+
 		// m_customerテーブルに入力
 		try {
-		Customer customer = new Customer();
-		customer.setCid(verifyCustomer.getCid());
-		customer.setCname(verifyCustomer.getCname());
-		customer.setPassword(verifyCustomer.getPassword());
-		customerRepository.save(customer);
-		// m_temporaryテーブルから削除
-		temporaryRepository.delete(verifyCustomer);
-		// レスポンスを返す
-		responce = ResponceService.responceMaker("Success");
-		} catch(Exception e) {
+			Customer customer = new Customer();
+			customer.setCid(verifyCustomer.getCid());
+			customer.setCname(verifyCustomer.getCname());
+			customer.setPassword(verifyCustomer.getPassword());
+			customerRepository.save(customer);
+			// m_temporaryテーブルから削除
+			temporaryRepository.delete(verifyCustomer);
+			// レスポンスを返す
+			responce = ResponceService.responceMaker("Success");
+		} catch (Exception e) {
 			responce = ResponceService.responceMaker("Error");
 			return responce;
 		}

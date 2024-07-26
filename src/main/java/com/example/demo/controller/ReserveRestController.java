@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,10 +16,12 @@ import com.example.demo.form.BookingCheckerForm;
 import com.example.demo.form.EmployeeForm;
 import com.example.demo.form.ReserveCheckForm;
 import com.example.demo.form.ReserveForm;
+import com.example.demo.form.ReserveFormTemp;
 import com.example.demo.repository.EmployeeRepository;
 import com.example.demo.repository.ReserveRepository;
 import com.example.demo.service.ReserveService;
 import com.example.demo.service.ResponceService;
+import com.example.demo.service.TokenService;
 
 import lombok.AllArgsConstructor;
 
@@ -33,25 +36,40 @@ import lombok.AllArgsConstructor;
 public class ReserveRestController {
 
 	// ReserveRepositoryのインジェクション
-	private final EmployeeRepository employeeRepository;
+
 	private final ReserveRepository reserveRepository;
 	private final ReserveService reserveService;
+	private final TokenService tokenService;
+	private final EmployeeRepository employeeRepository;
+
 
 	// 予約情報の追加--------------------------------------------------
 	@CrossOrigin
 	@PostMapping("/insert")
-	public HashMap<String, Object> insert(@RequestBody ReserveForm reserveForm) {
+	public HashMap<String, Object> insert(@RequestBody ReserveFormTemp reserveForm) {
 		HashMap<String, Object> responce = new HashMap<>();
+		String cid = null;
+		try {
+			cid = tokenService.extractUserId(reserveForm.getToken());
+
+		} catch (Exception e) {
+			responce = ResponceService.responceMaker("Denied");
+			return responce;
+		}
+
 		Reserve reserve = reserveForm.getEntity();
+		reserve.setCid(cid);
 
 		// エラーチェック
-		String error = reserveService.reserveExceptionCheck(reserveForm);
+		String error = reserveService.reserveExceptionCheck(reserveForm.getDate(), reserveForm.getTime(),
+				reserveForm.getEid(), cid);
+
 		if (error.isEmpty()) {
 			// データベースへの書き込み
 			reserveRepository.saveAndFlush(reserve);
 			responce = ResponceService.responceMaker("Success");
 		} else {
-			responce = ResponceService.responceMaker(error);
+			responce = ResponceService.responceMaker("Error");
 		}
 
 		return responce;
@@ -72,12 +90,13 @@ public class ReserveRestController {
 		return list; // 時間のリストをレスポンスとして返します
 	}
 
-	//--------------------------------------------------
+	// --------------------------------------------------
 	@CrossOrigin
 	@PostMapping("/check")
-	public List<Reserve> check(@RequestBody BookingCheckerForm bookingCheckerForm) {
-		List<Reserve> list = reserveRepository.findAllByCidOrderByDate(bookingCheckerForm.getCid());
-
+	public List<Reserve> check(@RequestBody HashMap<String, String> requestBody) {
+		String token = requestBody.get("token");
+		List<Reserve> list = reserveRepository.findAllByCidOrderByDate(tokenService.extractUserId(token));
+    
 		return list;
 	}
 
@@ -123,6 +142,16 @@ public class ReserveRestController {
 	}
 
 	@CrossOrigin
+	@GetMapping("reservelist")
+	public HashMap<String, Object> customerlist() {
+		HashMap<String, Object> responce = new HashMap<>();
+		List<Reserve> reserveList = reserveRepository.findAll();
+		responce = ResponceService.responceMaker("Success");
+		responce.put("results", reserveList);
+		responce.put("type", "Customer");
+		return responce;
+    
+  @CrossOrigin
 	@PostMapping("/available/flag")
 	public String available(@RequestBody EmployeeForm employeeForm) {
 		// @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
