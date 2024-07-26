@@ -19,6 +19,7 @@ import com.example.demo.form.ReserveForm;
 import com.example.demo.form.ReserveFormTemp;
 import com.example.demo.repository.EmployeeRepository;
 import com.example.demo.repository.ReserveRepository;
+import com.example.demo.service.EncodeService;
 import com.example.demo.service.ReserveService;
 import com.example.demo.service.ResponceService;
 import com.example.demo.service.TokenService;
@@ -64,6 +65,12 @@ public class ReserveRestController {
 		String error = reserveService.reserveExceptionCheck(reserveForm.getDate(), reserveForm.getTime(),
 				reserveForm.getEid(), cid);
 
+		if (!EncodeService.canEncodeToSJIS(new String[]{ reserveForm.getEtc() })) {
+			responce = ResponceService.responceMaker("Error");
+			return responce;
+		}
+
+		
 		if (error.isEmpty()) {
 			// データベースへの書き込み
 			reserveRepository.saveAndFlush(reserve);

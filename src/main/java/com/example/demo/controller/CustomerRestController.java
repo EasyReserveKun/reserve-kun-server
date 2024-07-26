@@ -20,6 +20,7 @@ import com.example.demo.entity.Temporary;
 import com.example.demo.form.CustomerForm;
 import com.example.demo.repository.CustomerRepository;
 import com.example.demo.repository.TemporaryRepository;
+import com.example.demo.service.EncodeService;
 import com.example.demo.service.LoginService;
 import com.example.demo.service.MailSenderServise;
 import com.example.demo.service.ResponceService;
@@ -95,6 +96,11 @@ public class CustomerRestController {
 		Customer signupUser = loginService.findExistAccount(customerForm.getCid(), customerForm.getPassword());
 		if (signupUser != null) {
 			responce = ResponceService.responceMaker("Duplicate");
+			return responce;
+		}
+		
+		if (!EncodeService.canEncodeToSJIS(new String[]{ customerForm.getCid(), customerForm.getCname(), customerForm.getPassword() })) {
+			responce = ResponceService.responceMaker("Error");
 			return responce;
 		}
 
