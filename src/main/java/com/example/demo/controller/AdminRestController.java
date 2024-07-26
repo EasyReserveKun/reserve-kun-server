@@ -47,7 +47,7 @@ public class AdminRestController {
 
 			// アカウントが管理者用でなければログイン失敗
 			Boolean isAdmin = (Objects.isNull(loginUser.getAdmin())) ? true : false;
-			if (!isAdmin) {
+			if (isAdmin) {
 				responce = ResponceService.responceMaker("Denied");
 				return responce;
 			}
