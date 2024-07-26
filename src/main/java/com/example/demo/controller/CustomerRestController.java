@@ -64,8 +64,8 @@ public class CustomerRestController {
 		}
 		
 		// アカウントが管理者用ならログイン失敗
-		Boolean isAdmin = (Objects.isNull(loginUser.getAdmin())) ? true : false;
-		if (!isAdmin) {
+		Boolean isAdmin = (Objects.nonNull(loginUser.getAdmin())) ? true : false;
+		if (isAdmin) {
 			responce = ResponceService.responceMaker("Denied");
 			return responce;
 		}
