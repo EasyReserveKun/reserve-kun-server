@@ -150,6 +150,7 @@ public class ReserveRestController {
 		responce.put("results", reserveList);
 		responce.put("type", "Customer");
 		return responce;
+	}
     
   @CrossOrigin
 	@PostMapping("/available/flag")
