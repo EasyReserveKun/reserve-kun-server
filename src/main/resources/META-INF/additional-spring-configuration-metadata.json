@@ -1,0 +1,27 @@
+{"properties": [
+  {
+    "name": "azure.cqa.endpoint",
+    "type": "java.lang.String",
+    "description": "Azureのcqaのエンドポイント'"
+  },
+    {
+    "name": "azure.cqa.api-key",
+    "type": "java.lang.String",
+    "description": "AzureのcqaのAPIキー'"
+  },
+    {
+    "name": "azure.cqa.project-name",
+    "type": "java.lang.String",
+    "description": "Azureのcqaのプロジェクト名'"
+  },
+    {
+    "name": "azure.cqa.deployment-name",
+    "type": "java.lang.String",
+    "description": "Azureのcqaのデプロイ名'"
+  },
+  {
+    "name": "expire.minutes",
+    "type": "java.lang.String",
+    "description": "仮登録の期限切れまでの時間(分)"
+  }
+]}

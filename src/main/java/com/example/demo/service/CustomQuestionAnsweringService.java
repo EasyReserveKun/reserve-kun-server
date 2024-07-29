@@ -1,7 +1,10 @@
 package com.example.demo.service;
 
-import org.springframework.core.ParameterizedTypeReference;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -9,22 +12,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Service
 public class CustomQuestionAnsweringService {
 
     @Value("${azure.cqa.endpoint}")
     private String endpoint;
 
-    @Value("${azure.cqa.apiKey}")
+    @Value("${azure.cqa.api-key}")
     private String apiKey;
 
-    @Value("${azure.cqa.projectName}")
+    @Value("${azure.cqa.project-name}")
     private String projectName;
 
-    @Value("${azure.cqa.deploymentName}")
+    @Value("${azure.cqa.deployment-name}")
     private String deploymentName;
 
 
