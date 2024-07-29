@@ -4,7 +4,11 @@ import java.sql.Date;
 
 import lombok.Data;
 
-@Data  // Lombokの@Dataアノテーション：ゲッター、セッター、toString、equals、hashCodeなどを自動生成します
+/**
+ * 予約確認のため送られてきた情報を保持するフォームクラス
+ * @author のうみそ＠overload
+ */
+@Data
 public class ReserveCheckForm {
 
     private Date date;  // 予約日

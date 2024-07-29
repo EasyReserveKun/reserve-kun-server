@@ -16,6 +16,11 @@ import java.util.Optional;
 
 import javax.crypto.SecretKey;
 
+
+/**
+ * tokenの生成や照合を行うメソッドを実装したクラス
+ * @author のうみそ＠overload
+ */
 @Service
 public class TokenService {
 
@@ -26,9 +31,6 @@ public class TokenService {
     }
     
     private final SecretKey secret = Jwts.SIG.HS256.key().build();
-    
-    //@Value("${TOKEN_SECRET}")
-    //private SecretKey secret;
     
     /**
      * トークンからユーザー名を抽出する
