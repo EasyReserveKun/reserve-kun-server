@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.Employee;
 import com.example.demo.entity.Reserve;
-import com.example.demo.form.EmployeeForm;
 import com.example.demo.form.ReserveForm;
 import com.example.demo.repository.EmployeeRepository;
 import com.example.demo.repository.ReserveRepository;
 import com.example.demo.service.ReserveService;
 import com.example.demo.service.ResponceService;
+import com.example.demo.service.TokenService;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -35,6 +35,7 @@ public class EmployeeRestController {
 	private final EmployeeRepository employeeRepository;
 	private final ReserveRepository reserveRepository;
 	private final ReserveService reserveService;
+	private final TokenService tokenService;
 
 	@CrossOrigin
 	@GetMapping("list")
@@ -61,7 +62,8 @@ public class EmployeeRestController {
 		HashMap<String, Object> response = new HashMap<>();
 		Date date = reserveForm.getDate();
 		String time = reserveForm.getTime();
-		String eid = reserveForm.getEid();
+		String eid = tokenService.extractUserId(reserveForm.getToken());
+		reserveForm.setCid(eid);
 
 		if ("すべての時間".equals(time)) {
 			response = processAllTimes(date, eid, timeArray, reserveForm);
@@ -147,13 +149,13 @@ public class EmployeeRestController {
 	@CrossOrigin
 	@Transactional
 	@PostMapping("stopAll")
-	public String stopAll(@RequestBody EmployeeForm employeeForm) {
+	public String stopAll(@RequestBody HashMap<String, Object> requestBody) {
 
-		System.out.println(employeeForm.getEid());
-		if ("".equals(employeeForm.getEid())) {
+		String eid = (String) requestBody.get("eid");
+		if ("".equals(eid)) {
 			return "従業員を選択してください";
 		} else {
-			int count = employeeRepository.updateSetFlag(employeeForm.getEid());
+			int count = employeeRepository.updateSetFlag(eid);
 
 			if (count == 1) {
 				return "受付を停止します";
@@ -166,12 +168,13 @@ public class EmployeeRestController {
 	@CrossOrigin
 	@Transactional
 	@PostMapping("reactivate")
-	public String reactivate(@RequestBody EmployeeForm employeeForm) {
+	public String reactivate(@RequestBody HashMap<String, Object> requestBody) {
 
-		if ("".equals(employeeForm.getEid())) {
+		String eid = (String) requestBody.get("eid");
+		if ("".equals(eid)) {
 			return "従業員を選択してください";
 		} else {
-			int count = employeeRepository.updateDeleteFlag(employeeForm.getEid());
+			int count = employeeRepository.updateDeleteFlag(eid);
 
 			if (count == 1) {
 				return "受付を開始します";

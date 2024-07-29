@@ -18,6 +18,8 @@ public class ReserveForm {
     private String cid;  // 顧客情報
 
     private String etc;  // その他の情報
+    
+    private String token;
 
     // Reserveクラスへデータの受け渡し
     public Reserve getEntity() {
