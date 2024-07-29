@@ -250,4 +250,19 @@ public class CustomerRestController {
 		return false;
 	}
 
+	@CrossOrigin
+	@Transactional
+	@PostMapping("leave")
+	public HashMap<String, Object> leave(@RequestBody HashMap<String, String> requestBody) {
+		HashMap<String, Object> responce = new HashMap<>();
+		// ログイン成功時の処理
+		String cid = tokenService.extractUserId(requestBody.get("token"));
+		int count = customerRepository.deleteAllByCid(cid);
+		if (count == 1) {
+			responce = ResponceService.responceMaker("Success");
+		} else {
+			responce = ResponceService.responceMaker("Error");
+		}
+		return responce;
+	}
 }
