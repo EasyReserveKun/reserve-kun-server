@@ -1,8 +1,3 @@
-/**
- * CustomerRestController.java
- * チャットボットに関する操作を行うクラス
- * @author のうみそ＠overload
- */
 package com.example.demo.controller;
 
 import java.time.LocalDateTime;
@@ -22,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.config.ExpireMinutesConfig;
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.Temporary;
-import com.example.demo.form.CustomerForm;
+import com.example.demo.form.SignupForm;
 import com.example.demo.repository.CustomerRepository;
 import com.example.demo.repository.TemporaryRepository;
 import com.example.demo.service.EncodeService;
@@ -35,6 +30,11 @@ import com.example.demo.service.TokenService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
+/**
+ * CustomerRestController.java
+ * チャットボットに関する操作を行うクラス
+ * @author のうみそ＠overload
+ */
 @AllArgsConstructor
 @RestController
 @CrossOrigin
@@ -95,7 +95,7 @@ public class CustomerRestController {
 	 */
 	@Transactional
 	@PostMapping("/signup")
-	public HashMap<String, Object> signup(@RequestBody CustomerForm customerForm) {
+	public HashMap<String, Object> signup(@RequestBody SignupForm customerForm) {
 		// 共通の処理
 		HashMap<String, Object> responce = new HashMap<>();
 		String code = generateCode();
