@@ -1,3 +1,8 @@
+/**
+ * AdminRestController.java
+ * 予約に関する情報を取り扱うエンドポイントを実装するクラス
+ * @author のうみそ＠overload
+ */
 package com.example.demo.controller;
 
 import java.util.HashMap;
@@ -16,21 +21,20 @@ import com.example.demo.service.TokenService;
 
 import lombok.AllArgsConstructor;
 
-//--------------------------------------------------//
-//  CustomerRestController.java
-//  顧客に関する情報を提供するコントローラークラス
-//--------------------------------------------------//
-
 @AllArgsConstructor
 @RestController
+@CrossOrigin
 @RequestMapping("/admin")
 public class AdminRestController {
 
 	private final LoginService loginService;
 	private final TokenService tokenService;
 
-	// 送信されたアカウント情報の照合を行うAPI（管理者用）
-	@CrossOrigin
+	/**
+	 * 送信されたアカウント情報の照合を行うAPI（管理者用）
+	 * @param requestBody ログインフォームに入力されたidとpassword
+	 * @return　status:ログインの可否 を含むjson
+	 */
 	@PostMapping("/login")
 	public HashMap<String, Object> login(@RequestBody HashMap<String, Object> requestBody) {
 		HashMap<String, Object> responce = new HashMap<>();

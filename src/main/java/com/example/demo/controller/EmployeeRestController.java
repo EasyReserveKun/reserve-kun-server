@@ -1,3 +1,8 @@
+/**
+ * EmployeeRestController.java
+ * 従業員情報に関する情報を取り扱うクラス
+ * @author のうみそ＠overload
+ */
 package com.example.demo.controller;
 
 import java.sql.Date;
@@ -23,20 +28,20 @@ import com.example.demo.service.ResponceService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
-//--------------------------------------------------//
-//　　EmployeeRestController.java
-//　　コンシェルジュに関する情報を提供するコントローラークラス
-//--------------------------------------------------//
-
 @AllArgsConstructor
 @RestController
+@CrossOrigin
 @RequestMapping("/employee")
 public class EmployeeRestController {
 	private final EmployeeRepository employeeRepository;
 	private final ReserveRepository reserveRepository;
 	private final ReserveService reserveService;
 
-	@CrossOrigin
+	/**
+	 * 予約情報をデータベースに登録するエンドポイント
+	 * @param reserveForm 予約の詳細情報を持つデータ
+	 * @return　予約処理のステータス
+	 */
 	@GetMapping("list")
 	public HashMap<String, Object> list() {
 		HashMap<String, Object> responce = new HashMap<>();
@@ -48,7 +53,6 @@ public class EmployeeRestController {
 
 	}
 
-	@CrossOrigin
 	@Transactional
 	@PostMapping("stop")
 	public HashMap<String, Object> stop(@RequestBody ReserveForm reserveForm) {
@@ -115,7 +119,6 @@ public class EmployeeRestController {
 		}
 	}
 
-	@CrossOrigin
 	@Transactional
 	@PostMapping("reactivation")
 	public String reactivation(@RequestBody ReserveForm reserveForm) {
@@ -144,7 +147,6 @@ public class EmployeeRestController {
 		}
 	}
 
-	@CrossOrigin
 	@Transactional
 	@PostMapping("stopAll")
 	public String stopAll(@RequestBody EmployeeForm employeeForm) {
@@ -163,7 +165,6 @@ public class EmployeeRestController {
 		}
 	}
 
-	@CrossOrigin
 	@Transactional
 	@PostMapping("reactivate")
 	public String reactivate(@RequestBody EmployeeForm employeeForm) {

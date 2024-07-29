@@ -1,3 +1,9 @@
+/**
+ * AuthController.java
+ * ログインtokenを照合するエンドポイント
+ * @author のうみそ＠overload
+ */
+
 package com.example.demo.controller;
 
 import java.util.HashMap;
@@ -13,18 +19,19 @@ import com.example.demo.service.TokenService;
 
 import lombok.AllArgsConstructor;
 
-//--------------------------------------------------//
-//CustomerRestController.java
-//顧客に関する情報を提供するコントローラークラス
-//--------------------------------------------------//
-
 @AllArgsConstructor
 @RestController
+@CrossOrigin
 @RequestMapping("/auth")
 public class AuthController {
 	private final TokenService tokenService;
 
-	@CrossOrigin
+
+	/**
+	 * 顧客アカウントのtokenを照合するエンドポイント
+	 * @param requestBody token情報
+	 * @return　status:認証のステータス を含むjson
+	 */
 	@PostMapping("/customer")
 	public HashMap<String, Object> authCustomer(@RequestBody HashMap<String, Object> requestBody) {
 		String token = (String) requestBody.get("token");
@@ -38,7 +45,11 @@ public class AuthController {
 		return responce;
 	}
 	
-	@CrossOrigin
+	/**
+	 * 従業員アカウントのtokenを照合するエンドポイント
+	 * @param requestBody token情報
+	 * @return　status:認証のステータス を含むjson
+	 */
 	@PostMapping("/admin")
 	public HashMap<String, Object> authAdmin(@RequestBody HashMap<String, Object> requestBody) {
 		String token = (String) requestBody.get("token");

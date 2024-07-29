@@ -1,3 +1,9 @@
+/**
+ * QuestionAnsweringController.java
+ * チャットボットに関する操作を行うクラス
+ * @author のうみそ＠overload
+ */
+
 package com.example.demo.controller;
 
 import java.util.Map;
@@ -19,15 +25,15 @@ public class QuestionAnsweringController {
 
     private final CustomQuestionAnsweringService cqaService;
 
+	/**
+	 *　ボットへの質問を受け取り返答を送信するエンドポイント
+	 * @param request ボットへの質問
+	 * @return　ボットの回答
+	 */
     @CrossOrigin
     @PostMapping("/search")
     public Map<String, Object> askQuestion(@RequestBody Map<String, String> request) {
         String question = request.get("question");
-        return cqaService.getAnswer(question);
-    }
-
-    @GetMapping("/ask")
-    public Map<String, Object> askQuestion(@RequestParam String question) {
         return cqaService.getAnswer(question);
     }
 }
