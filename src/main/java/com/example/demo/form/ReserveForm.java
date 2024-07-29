@@ -6,6 +6,12 @@ import com.example.demo.entity.Reserve;
 
 import lombok.Data;
 
+/**
+ * ReserveForm.java
+ * 予約情報を保持するフォームクラス
+ * 予約の受付時にデータを受け取るために使用する
+ * @author のうみそ＠overload
+ */
 @Data  // Lombokの@Dataアノテーション：ゲッター、セッター、toString、equals、hashCodeなどを自動生成します
 public class ReserveForm {
 
@@ -21,7 +27,10 @@ public class ReserveForm {
     
     private String token;
 
-    // Reserveクラスへデータの受け渡し
+    /**
+     * 予約情報をReserve型にして返すメソッド
+     * @return Reserve型の予約情報
+     */
     public Reserve getEntity() {
         // Reserveエンティティオブジェクトを取得するメソッド
 
@@ -34,6 +43,10 @@ public class ReserveForm {
         return reserve;  // 作成したReserveエンティティオブジェクトを返します
     }
     
+    /**
+     * 予約停止情報をReserve型にし、stopflagを立てて返すメソッド
+     * @return Reserve型の予約情報
+     */
     public Reserve insertEntity() {
         // Reserveエンティティオブジェクトを取得するメソッド
 

@@ -1,3 +1,9 @@
+/**
+ * ReserveRestController.java
+ * 予約に関する情報を取り扱うエンドポイントを実装するクラス
+ * @author のうみそ＠overload
+ */
+
 package com.example.demo.controller;
 
 import java.util.HashMap;
@@ -18,23 +24,19 @@ import com.example.demo.form.ReserveForm;
 import com.example.demo.form.ReserveFormTemp;
 import com.example.demo.repository.EmployeeRepository;
 import com.example.demo.repository.ReserveRepository;
+import com.example.demo.service.EncodeService;
 import com.example.demo.service.ReserveService;
 import com.example.demo.service.ResponceService;
 import com.example.demo.service.TokenService;
 
 import lombok.AllArgsConstructor;
 
-//--------------------------------------------------//
-//  ReserveRestController.java
-//  予約に関する情報を提供するコントローラークラス
-//--------------------------------------------------//
 
 @AllArgsConstructor
 @RestController
+@CrossOrigin
 @RequestMapping("/reserve")
 public class ReserveRestController {
-
-	// ReserveRepositoryのインジェクション
 
 	private final ReserveRepository reserveRepository;
 	private final ReserveService reserveService;
@@ -42,8 +44,11 @@ public class ReserveRestController {
 	private final EmployeeRepository employeeRepository;
 
 
-	// 予約情報の追加--------------------------------------------------
-	@CrossOrigin
+	/**
+	 * 予約情報をデータベースに登録するエンドポイント
+	 * @param reserveForm 予約の詳細情報を持つデータ
+	 * @return　status:予約処理のステータス を含むjson
+	 */
 	@PostMapping("/insert")
 	public HashMap<String, Object> insert(@RequestBody ReserveFormTemp reserveForm) {
 		HashMap<String, Object> responce = new HashMap<>();
@@ -63,6 +68,12 @@ public class ReserveRestController {
 		String error = reserveService.reserveExceptionCheck(reserveForm.getDate(), reserveForm.getTime(),
 				reserveForm.getEid(), cid);
 
+		if (!EncodeService.canEncodeToSJIS(new String[]{ reserveForm.getEtc() })) {
+			responce = ResponceService.responceMaker("Error");
+			return responce;
+		}
+
+		
 		if (error.isEmpty()) {
 			// データベースへの書き込み
 			reserveRepository.saveAndFlush(reserve);
@@ -74,8 +85,11 @@ public class ReserveRestController {
 		return responce;
 	}
 
-	// 予約可能な時間の確認--------------------------------------------------
-	@CrossOrigin
+	/**
+	 * 予約可能な時間帯を確認するためのエンドポイント
+	 * @param reserveForm 予約する日付と従業員
+	 * @return　その日、その従業が予約を受け入れられる時間のリスト
+	 */
 	@PostMapping("/available")
 	public List<String> available(@RequestBody ReserveCheckForm reserveCheckForm) {
 		// @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
@@ -89,8 +103,11 @@ public class ReserveRestController {
 		return list; // 時間のリストをレスポンスとして返します
 	}
 
-	// --------------------------------------------------
-	@CrossOrigin
+	/**
+	 * ユーザーの予約履歴を確認するためのエンドポイント
+	 * @param requestBody ユーザーのtoken
+	 * @return　ユーザーの全ての予約情報
+	 */
 	@PostMapping("/check")
 	public List<Reserve> check(@RequestBody HashMap<String, String> requestBody) {
 		String token = requestBody.get("token");
@@ -99,19 +116,23 @@ public class ReserveRestController {
 		return list;
 	}
 
-	@CrossOrigin
+	/**
+	 * 管理者画面で予約一覧を確認するためのエンドポイント
+	 * @param requestBody 絞り込みを行うための従業員番号
+	 * @return 全て、またはeidで絞り込んだ予約情報
+	 */
 	@PostMapping("/employeeCheck")
-	public List<Map<String, Object>> employeeCheck(@RequestBody BookingCheckerForm bookingCheckerForm) {
+	public List<Map<String, Object>> employeeCheck(@RequestBody HashMap<String, String> requestBody) {
 		List<Map<String, Object>> list;
-		if ("all".equals(bookingCheckerForm.getEid())) {
+		String eid = requestBody.get("eid");
+		if ("all".equals(eid)) {
 			list = reserveRepository.findAllByOrderByDate();
 		} else {
-			list = reserveRepository.findAllByEidOrderByDate(bookingCheckerForm.getEid());
+			list = reserveRepository.findAllByEidOrderByDate(eid);
 		}
 		return list;
 	}
 
-	@CrossOrigin
 	@PostMapping("/cancel")
 	public String cancel(@RequestBody ReserveForm reserveForm) {
 
@@ -125,7 +146,6 @@ public class ReserveRestController {
 		}
 	}
 
-	@CrossOrigin
 	@PostMapping("/unavailable")
 	public List<String> unavailable(@RequestBody ReserveCheckForm reserveCheckForm) {
 		// @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
@@ -140,7 +160,6 @@ public class ReserveRestController {
 		return list; // 時間のリストをレスポンスとして返します
 	}
 
-	@CrossOrigin
 	@GetMapping("reservelist")
 	public HashMap<String, Object> customerlist() {
 		HashMap<String, Object> responce = new HashMap<>();
@@ -151,7 +170,6 @@ public class ReserveRestController {
 		return responce;
 	}
     
-  @CrossOrigin
 	@PostMapping("/available/flag")
 	public String available(@RequestBody HashMap<String, Object> requestBody) {
 		// @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです

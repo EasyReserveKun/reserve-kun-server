@@ -17,9 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.config.ExpireMinutesConfig;
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.Temporary;
-import com.example.demo.form.CustomerForm;
+import com.example.demo.form.SignupForm;
 import com.example.demo.repository.CustomerRepository;
 import com.example.demo.repository.TemporaryRepository;
+import com.example.demo.service.EncodeService;
 import com.example.demo.service.LoginService;
 import com.example.demo.service.MailSenderServise;
 import com.example.demo.service.ResponceService;
@@ -29,13 +30,14 @@ import com.example.demo.service.TokenService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
-//--------------------------------------------------//
-//  CustomerRestController.java
-//  顧客に関する情報を提供するコントローラークラス
-//--------------------------------------------------//
-
+/**
+ * CustomerRestController.java
+ * チャットボットに関する操作を行うクラス
+ * @author のうみそ＠overload
+ */
 @AllArgsConstructor
 @RestController
+@CrossOrigin
 @RequestMapping("/customer")
 public class CustomerRestController {
 
@@ -47,8 +49,12 @@ public class CustomerRestController {
 	private final SignupService signupService;
 	private final ExpireMinutesConfig emConfig;
 
-	// ログイン情報を受け取り照合を行うAPI
-	@CrossOrigin
+
+	/**
+	 * ログイン情報を照合するエンドポイント
+	 * @param requestBody 入力されたidとpassword
+	 * @return　status:ステータス, token:トークン を含むjson
+	 */
 	@PostMapping("/login")
 	public HashMap<String, Object> login(@RequestBody HashMap<String, Object> requestBody) {
 		HashMap<String, Object> responce = new HashMap<>();
@@ -82,11 +88,14 @@ public class CustomerRestController {
 		}
 	}
 
-	// 登録情報を受け取り、認証コードを送信
-	@CrossOrigin
+	/**
+	 * アカウント登録を行うエンドポイント
+	 * @param customerForm フォームに入力された名前、id、password
+	 * @return　status:ステータス を含むjson
+	 */
 	@Transactional
 	@PostMapping("/signup")
-	public HashMap<String, Object> signup(@RequestBody CustomerForm customerForm) {
+	public HashMap<String, Object> signup(@RequestBody SignupForm customerForm) {
 		// 共通の処理
 		HashMap<String, Object> responce = new HashMap<>();
 		String code = generateCode();
@@ -95,6 +104,12 @@ public class CustomerRestController {
 		Customer signupUser = loginService.findExistAccount(customerForm.getCid(), customerForm.getPassword());
 		if (signupUser != null) {
 			responce = ResponceService.responceMaker("Duplicate");
+			return responce;
+		}
+
+		if (!EncodeService.canEncodeToSJIS(
+				new String[] { customerForm.getCid(), customerForm.getCname(), customerForm.getPassword() })) {
+			responce = ResponceService.responceMaker("Error");
 			return responce;
 		}
 
@@ -113,7 +128,6 @@ public class CustomerRestController {
 
 			msService.sendSimpleMessage(customerForm.getCid(), title, message);
 			responce = ResponceService.responceMaker("Success");
-			responce.put("code", code);
 			return responce;
 		} catch (Exception e) {
 			responce = ResponceService.responceMaker("Error");
@@ -121,8 +135,11 @@ public class CustomerRestController {
 		}
 	}
 
-	// 認証コードが通った先の処理
-	@CrossOrigin
+	/**
+	 * 認証コードの照合を行うエンドポイント
+	 * @param requestBody フォームに入力された認証コード
+	 * @return　status:ステータス を含むjson
+	 */
 	@Transactional
 	@PostMapping("/verify")
 	public HashMap<String, Object> verify(@RequestBody HashMap<String, Object> requestBody) {
@@ -172,7 +189,29 @@ public class CustomerRestController {
 		return responce;
 	}
 
-	@CrossOrigin
+	/**
+	 * ユーザーtokenから登録名を抽出するエンドポイント
+	 * @param requestBody ログインされているユーザーのtoken
+	 * @return　status:ステータス, name:抽出したユーザ名 を含むjson
+	 */
+	@PostMapping("/getname")
+	public HashMap<String, Object> getName(@RequestBody HashMap<String, String> requestBody) {
+		HashMap<String, Object> responce = new HashMap<>();
+		try {
+			String token = requestBody.get("token");
+			responce = ResponceService.responceMaker("Success");
+			responce.put("name", tokenService.extractUsername(token));
+			return responce;
+		} catch (Exception e) {
+			responce = ResponceService.responceMaker("Error");
+			return responce;
+		}
+	}
+
+	/**
+	 * デバッグ用 仮登録テーブルを確認するためのエンドポイント
+	 * @return　type:Temporary, results:全仮登録データ を含むjson
+	 */
 	@GetMapping("templist")
 	public HashMap<String, Object> templist() {
 		HashMap<String, Object> responce = new HashMap<>();
@@ -183,7 +222,10 @@ public class CustomerRestController {
 		return responce;
 	}
 
-	@CrossOrigin
+	/**
+	 * デバッグ用 顧客テーブルを確認するためのエンドポイント
+	 * @return　type:Temporary, results:全仮登録データ を含むjson
+	 */
 	@GetMapping("customerlist")
 	public HashMap<String, Object> customerlist(@RequestParam(name = "cid", required = false) String cid) {
 		HashMap<String, Object> responce = new HashMap<>();

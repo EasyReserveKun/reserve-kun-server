@@ -1,3 +1,4 @@
+
 package com.example.demo.form;
 
 import java.sql.Date;
@@ -6,6 +7,13 @@ import com.example.demo.entity.Reserve;
 
 import lombok.Data;
 
+/**
+ * 予約情報を保持するフォームクラス
+ * アカウント情報をtokenで扱うようになったため対応のために一時的に使用しています
+ * 将来的に削除する予定です
+ * @deprecated
+ * @author のうみそ＠overload
+ */
 @Data  // Lombokの@Dataアノテーション：ゲッター、セッター、toString、equals、hashCodeなどを自動生成します
 public class ReserveFormTemp {
 
@@ -19,9 +27,12 @@ public class ReserveFormTemp {
 
     private String etc;  // その他の情報
     
+    
+    /**
+     * token以外の情報をReserveがたに挿入して返すメソッド
+     * @return Reserve型の予約情報
+     */
     public Reserve getEntity() {
-        // Reserveエンティティオブジェクトを取得するメソッド
-
         Reserve reserve = new Reserve();  // Reserveエンティティのインスタンスを作成します
         reserve.setDate(date);  // 予約日を設定します
         reserve.setTime(time);  // 予約時間を設定します
