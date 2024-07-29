@@ -151,11 +151,7 @@ public class ReserveRestController {
 		// @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
 
 		// 日付と社員IDに基づいてリポジトリから時間のリストを取得します
-		List<String> list = reserveRepository.findAllTimesByDateAndEidAndFlag(
-				reserveCheckForm.getDate(), // フォームオブジェクトから日付を取得します
-				reserveCheckForm.getEid(), // フォームオブジェクトから社員IDを取得します
-				"1"//予約停止フラグ
-		);
+		List<String> list = reserveRepository.findAllByFlag("1");
 
 		return list; // 時間のリストをレスポンスとして返します
 	}
@@ -182,6 +178,7 @@ public class ReserveRestController {
 			return "現在は予約を受け付けておりません"; // 時間のリストをレスポンスとして返します
 		} else {
 			return "予約可能です";
+			
 		}
 	}
 }
