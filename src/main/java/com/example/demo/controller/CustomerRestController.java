@@ -53,28 +53,28 @@ public class CustomerRestController {
 	public HashMap<String, Object> login(@RequestBody HashMap<String, Object> requestBody) {
 		HashMap<String, Object> responce = new HashMap<>();
 		try {
-		String cid = (String) requestBody.get("cid");
-		String password = (String) requestBody.get("password");
-		
-		// 存在しないアカウントならログイン失敗
-		Customer loginUser = loginService.findExistAccount(cid, password);
-		if (loginUser == null) {
-			responce = ResponceService.responceMaker("NotExist");
-			return responce;
-		}
-		
-		// アカウントが管理者用ならログイン失敗
-		Boolean isAdmin = (Objects.nonNull(loginUser.getAdmin())) ? true : false;
-		if (isAdmin) {
-			responce = ResponceService.responceMaker("Denied");
-			return responce;
-		}
+			String cid = (String) requestBody.get("cid");
+			String password = (String) requestBody.get("password");
 
-		// ログイン成功時の処理
-		String token = tokenService.generateToken(loginUser.getCname(), loginUser.getCid(), isAdmin);
-		responce = ResponceService.responceMaker("Success");
-		responce.put("token", token);
-		return responce;
+			// 存在しないアカウントならログイン失敗
+			Customer loginUser = loginService.findExistAccount(cid, password);
+			if (loginUser == null) {
+				responce = ResponceService.responceMaker("NotExist");
+				return responce;
+			}
+
+			// アカウントが管理者用ならログイン失敗
+			Boolean isAdmin = (Objects.nonNull(loginUser.getAdmin())) ? true : false;
+			if (isAdmin) {
+				responce = ResponceService.responceMaker("Denied");
+				return responce;
+			}
+
+			// ログイン成功時の処理
+			String token = tokenService.generateToken(loginUser.getCname(), loginUser.getCid(), isAdmin);
+			responce = ResponceService.responceMaker("Success");
+			responce.put("token", token);
+			return responce;
 		} catch (Exception e) {
 			responce = ResponceService.responceMaker("Error");
 			System.err.println(e);
@@ -188,15 +188,15 @@ public class CustomerRestController {
 	public HashMap<String, Object> customerlist(@RequestParam(name = "cid", required = false) String cid) {
 		HashMap<String, Object> responce = new HashMap<>();
 		List<Customer> customerList = customerRepository.findAll();
-		
+
 		try {
-		if(cid != null) {
-			customerRepository.deleteByCid(cid);
-		}
-		} catch(Exception e) {
+			if (cid != null) {
+				customerRepository.deleteByCid(cid);
+			}
+		} catch (Exception e) {
 			System.err.println(e);
 		}
-		
+
 		responce = ResponceService.responceMaker("Success");
 		responce.put("results", customerList);
 		responce.put("type", "Customer");
@@ -227,4 +227,19 @@ public class CustomerRestController {
 		return false;
 	}
 
+	@CrossOrigin
+	@Transactional
+	@PostMapping("leave")
+	public HashMap<String, Object> leave(@RequestBody HashMap<String, String> requestBody) {
+		HashMap<String, Object> responce = new HashMap<>();
+		// ログイン成功時の処理
+		String cid = tokenService.extractUserId(requestBody.get("token"));
+		int count = customerRepository.deleteAllByCid(cid);
+		if (count == 1) {
+			responce = ResponceService.responceMaker("Success");
+		} else {
+			responce = ResponceService.responceMaker("Error");
+		}
+		return responce;
+	}
 }

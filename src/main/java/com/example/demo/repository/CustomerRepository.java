@@ -30,5 +30,6 @@ public interface CustomerRepository extends JpaRepository<Customer, String> {
     public void deleteByCid(String cid);
 
 
+    public int deleteAllByCid(String cid);
 }
 
