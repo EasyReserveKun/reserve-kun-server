@@ -54,28 +54,28 @@ public class CustomerRestController {
 	public HashMap<String, Object> login(@RequestBody HashMap<String, Object> requestBody) {
 		HashMap<String, Object> responce = new HashMap<>();
 		try {
-		String cid = (String) requestBody.get("cid");
-		String password = (String) requestBody.get("password");
-		
-		// 存在しないアカウントならログイン失敗
-		Customer loginUser = loginService.findExistAccount(cid, password);
-		if (loginUser == null) {
-			responce = ResponceService.responceMaker("NotExist");
-			return responce;
-		}
-		
-		// アカウントが管理者用ならログイン失敗
-		Boolean isAdmin = (Objects.nonNull(loginUser.getAdmin())) ? true : false;
-		if (isAdmin) {
-			responce = ResponceService.responceMaker("Denied");
-			return responce;
-		}
+			String cid = (String) requestBody.get("cid");
+			String password = (String) requestBody.get("password");
 
-		// ログイン成功時の処理
-		String token = tokenService.generateToken(loginUser.getCname(), loginUser.getCid(), isAdmin);
-		responce = ResponceService.responceMaker("Success");
-		responce.put("token", token);
-		return responce;
+			// 存在しないアカウントならログイン失敗
+			Customer loginUser = loginService.findExistAccount(cid, password);
+			if (loginUser == null) {
+				responce = ResponceService.responceMaker("NotExist");
+				return responce;
+			}
+
+			// アカウントが管理者用ならログイン失敗
+			Boolean isAdmin = (Objects.nonNull(loginUser.getAdmin())) ? true : false;
+			if (isAdmin) {
+				responce = ResponceService.responceMaker("Denied");
+				return responce;
+			}
+
+			// ログイン成功時の処理
+			String token = tokenService.generateToken(loginUser.getCname(), loginUser.getCid(), isAdmin);
+			responce = ResponceService.responceMaker("Success");
+			responce.put("token", token);
+			return responce;
 		} catch (Exception e) {
 			responce = ResponceService.responceMaker("Error");
 			System.err.println(e);
@@ -98,8 +98,9 @@ public class CustomerRestController {
 			responce = ResponceService.responceMaker("Duplicate");
 			return responce;
 		}
-		
-		if (!EncodeService.canEncodeToSJIS(new String[]{ customerForm.getCid(), customerForm.getCname(), customerForm.getPassword() })) {
+
+		if (!EncodeService.canEncodeToSJIS(
+				new String[] { customerForm.getCid(), customerForm.getCname(), customerForm.getPassword() })) {
 			responce = ResponceService.responceMaker("Error");
 			return responce;
 		}
@@ -178,6 +179,22 @@ public class CustomerRestController {
 		return responce;
 	}
 
+	// tokenから名前を抽出するエンドポイント
+	@CrossOrigin
+	@PostMapping("/getname")
+	public HashMap<String, Object> getName(@RequestBody HashMap<String, String> requestBody) {
+		HashMap<String, Object> responce = new HashMap<>();
+		try {
+			String token = requestBody.get("token");
+			responce = ResponceService.responceMaker("Success");
+			responce.put("name", tokenService.extractUsername(token));
+			return responce;
+		} catch (Exception e) {
+			responce = ResponceService.responceMaker("Error");
+			return responce;
+		}
+	}
+
 	@CrossOrigin
 	@GetMapping("templist")
 	public HashMap<String, Object> templist() {
@@ -194,15 +211,15 @@ public class CustomerRestController {
 	public HashMap<String, Object> customerlist(@RequestParam(name = "cid", required = false) String cid) {
 		HashMap<String, Object> responce = new HashMap<>();
 		List<Customer> customerList = customerRepository.findAll();
-		
+
 		try {
-		if(cid != null) {
-			customerRepository.deleteByCid(cid);
-		}
-		} catch(Exception e) {
+			if (cid != null) {
+				customerRepository.deleteByCid(cid);
+			}
+		} catch (Exception e) {
 			System.err.println(e);
 		}
-		
+
 		responce = ResponceService.responceMaker("Success");
 		responce.put("results", customerList);
 		responce.put("type", "Customer");
