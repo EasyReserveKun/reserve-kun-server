@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.Reserve;
-import com.example.demo.form.EmployeeForm;
+import com.example.demo.form.BookingCheckerForm;
 import com.example.demo.form.ReserveCheckForm;
 import com.example.demo.form.ReserveForm;
 import com.example.demo.form.ReserveFormTemp;
@@ -171,13 +171,12 @@ public class ReserveRestController {
 	}
     
 	@PostMapping("/available/flag")
-	public String available(@RequestBody EmployeeForm employeeForm) {
+	public String available(@RequestBody HashMap<String, Object> requestBody) {
 		// @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
 
+	  String eid = (String) requestBody.get("eid");
 		// 日付と社員IDに基づいてリポジトリから時間のリストを取得します
-		int count = employeeRepository.findAllByEid(
-				employeeForm.getEid() // フォームオブジェクトから社員IDを取得します
-		);
+		int count = employeeRepository.findAllByEid(eid);
 
 		if (count == 1) {
 			return "現在は予約を受け付けておりません"; // 時間のリストをレスポンスとして返します

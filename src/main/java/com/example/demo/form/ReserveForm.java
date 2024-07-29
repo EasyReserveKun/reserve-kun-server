@@ -25,6 +25,8 @@ public class ReserveForm {
 
     private String etc;  // その他の情報
     
+    private String token;
+
     /**
      * 予約情報をReserve型にして返すメソッド
      * @return Reserve型の予約情報
