@@ -1,6 +1,12 @@
+/**
+ * AdminRestController.java
+ * 予約に関する情報を取り扱うエンドポイントを実装するクラス
+ * @author のうみそ＠overload
+ */
 package com.example.demo.controller;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,42 +15,59 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.Customer;
-import com.example.demo.form.CustomerLoginForm;
 import com.example.demo.service.LoginService;
 import com.example.demo.service.ResponceService;
+import com.example.demo.service.TokenService;
 
 import lombok.AllArgsConstructor;
 
-//--------------------------------------------------//
-//  CustomerRestController.java
-//  顧客に関する情報を提供するコントローラークラス
-//--------------------------------------------------//
-
 @AllArgsConstructor
 @RestController
+@CrossOrigin
 @RequestMapping("/admin")
 public class AdminRestController {
 
 	private final LoginService loginService;
+	private final TokenService tokenService;
 
-	// 送信されたアカウント情報の照合を行うAPI（管理者用）
-	@CrossOrigin
+	/**
+	 * 送信されたアカウント情報の照合を行うAPI（管理者用）
+	 * @param requestBody ログインフォームに入力されたidとpassword
+	 * @return　status:ログインの可否 を含むjson
+	 */
 	@PostMapping("/login")
-	public HashMap<String, Object> login(@RequestBody CustomerLoginForm customerLoginForm) {
-
-		Customer loginUser = loginService.AdminExist(customerLoginForm);
+	public HashMap<String, Object> login(@RequestBody HashMap<String, Object> requestBody) {
 		HashMap<String, Object> responce = new HashMap<>();
-		HashMap<String, Object> results = new HashMap<>();
-		if (loginUser != null) {
-			responce = ResponceService.responceMaker("Success");
-			results.put("mail", loginUser.getCid());
-			results.put("name", loginUser.getCname());
-			responce.put("results", results);
-		} else {
-			responce = ResponceService.responceMaker("Error");
-		}
-		return responce;
-	}
+		try {
+			String cid = (String) requestBody.get("cid");
+			String password = (String) requestBody.get("password");
 
+			// 存在しないアカウントならログイン失敗
+			Customer loginUser = loginService.findExistAccount(cid, password);
+			if (loginUser == null) {
+				responce = ResponceService.responceMaker("NotExist");
+				return responce;
+			}
+
+			// アカウントが管理者用でなければログイン失敗
+			Boolean isAdmin = (Objects.nonNull(loginUser.getAdmin())) ? true : false;
+			if (!isAdmin) {
+				responce = ResponceService.responceMaker("Denied");
+				return responce;
+			}
+			
+			
+			// ログイン成功時の処理
+			String token = tokenService.generateToken(loginUser.getCname(), loginUser.getCid(),
+					isAdmin);
+			responce = ResponceService.responceMaker("Success");
+			responce.put("token", token);
+			return responce;
+		} catch (Exception e) {
+			responce = ResponceService.responceMaker("Error");
+			System.err.println(e);
+			return responce;
+		}
+	}
 
 }
