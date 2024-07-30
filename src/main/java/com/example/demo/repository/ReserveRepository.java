@@ -67,7 +67,7 @@ public interface ReserveRepository extends JpaRepository<Reserve, ReserveComposi
 	//	int deleteByDateAndTimeAndEid(@Param("date") Date date, @Param("eid") String eid, @Param("time") String time);
 
 	@Modifying
-	@Query("DELETE FROM Reserve r WHERE r.date = :date AND r.eid = :eid AND r.time = :time AND r.stop_flag = '1'")
+	@Query("DELETE FROM Reserve r WHERE r.date = :date AND r.eid = :eid AND r.time = :time AND r.stopFlag = '1'")
 	int deleteByDateAndTimeAndEidAndStopFlag(@Param("date") Date date, @Param("eid") String eid,
 			@Param("time") String time);
 }

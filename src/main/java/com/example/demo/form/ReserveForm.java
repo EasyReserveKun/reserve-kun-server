@@ -42,7 +42,7 @@ public class ReserveForm {
         reserve.setEid(eid);  // 従業員IDを設定します
         reserve.setCid(cid);  // 顧客IDを設定します
         reserve.setEtc(etc);  // その他の情報を設定します
-        reserve.setStop_flag(stopFlag);
+        reserve.setStopFlag(stopFlag);
         return reserve;  // 作成したReserveエンティティオブジェクトを返します
     }
 }
