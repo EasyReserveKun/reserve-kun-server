@@ -29,15 +29,6 @@ import lombok.AllArgsConstructor;
  * 予約に関する情報を取り扱うエンドポイントを実装するクラス
  * @author のうみそ＠overload
  */
-
-/**
- * @author isa
- *
- */
-/**
- * @author isa
- *
- */
 @AllArgsConstructor
 @RestController
 @CrossOrigin
