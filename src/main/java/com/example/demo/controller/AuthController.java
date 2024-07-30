@@ -1,9 +1,3 @@
-/**
- * AuthController.java
- * ログインtokenを照合するエンドポイント
- * @author のうみそ＠overload
- */
-
 package com.example.demo.controller;
 
 import java.util.HashMap;
@@ -19,6 +13,11 @@ import com.example.demo.service.TokenService;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * AuthController.java
+ * ログインtokenを照合するエンドポイントを実装したクラス
+ * @author のうみそ＠overload
+ */
 @AllArgsConstructor
 @RestController
 @CrossOrigin

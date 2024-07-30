@@ -1,13 +1,10 @@
-/**
- * EmployeeRestController.java
- * 従業員情報に関する情報を取り扱うクラス
- * @author のうみそ＠overload
- */
 package com.example.demo.controller;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +25,11 @@ import com.example.demo.service.TokenService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
+/**
+ * EmployeeRestController.java
+ * 従業員情報についてのエンドポイントを実装したクラス
+ * @author のうみそ＠overload
+ */
 @AllArgsConstructor
 @RestController
 @CrossOrigin
@@ -57,67 +59,52 @@ public class EmployeeRestController {
 	@Transactional
 	@PostMapping("stop")
 	public HashMap<String, Object> stop(@RequestBody ReserveForm reserveForm) {
+		HashMap<String, Object> response = new HashMap<>();
+		String cid = tokenService.extractUserId(reserveForm.getToken());
+		Reserve reserve = reserveForm.getEntity(cid, "1");
 
+		if ("すべての時間".equals(reserve.getTime())) {
+			response = processAllTimes(reserve);
+		} else {
+			response = processSpecificTime(reserve);
+		}
+
+		return response;
+	}
+
+	private HashMap<String, Object> processAllTimes(Reserve reserve) {
+		HashMap<String, Object> response = new HashMap<>();
 		String[] timeArray = {
 				"10:00", "11:00", "12:00", "13:00", "14:00", "15:00",
 				"16:00", "17:00", "18:00", "19:00"
-		};
-
-		HashMap<String, Object> response = new HashMap<>();
-		Date date = reserveForm.getDate();
-		String time = reserveForm.getTime();
-		String eid = tokenService.extractUserId(reserveForm.getToken());
-		reserveForm.setCid(eid);
-
-		if ("すべての時間".equals(time)) {
-			response = processAllTimes(date, eid, timeArray, reserveForm);
-		} else {
-			response = processSpecificTime(date, eid, reserveForm);
-		}
-
-		return response;
-	}
-
-	private HashMap<String, Object> processAllTimes(Date date, String eid, String[] timeArray,
-			ReserveForm reserveForm) {
-		boolean isReserved = false;
-		HashMap<String, Object> response = new HashMap<>();
+				};
+		
 		for (String time : timeArray) {
-			if (reserveRepository.findAllTimesByDateAndEidAndTime(date, eid, time) == null) {
-				reserveForm.setTime(time);
-				System.out.println("Setting time to: " + time);
+			if (reserveRepository.findAllTimesByDateAndEidAndTime(reserve.getDate(), reserve.getEid(), reserve.getTime()) == null) {
+				reserve.setTime(time);
 
-				Reserve reserve = reserveForm.insertEntity();
-				String error = reserveService.reserveEmployeeCheck(reserveForm);
+				Reserve reserveDuplicated = reserveService.findReserveDuplicated(reserve);
 
-				if (error.isEmpty()) {
+				if (Objects.isNull(reserveDuplicated)) {
 					reserveRepository.save(reserve);
-					isReserved = true;
 					response = ResponceService.responceMaker("Success");
 				} else {
-					System.out.println(error);
-					response = ResponceService.responceMaker(error);
-					isReserved = true;
+					System.out.println("Duplicated");
+					response = ResponceService.responceMaker("Duplicated");
 				}
 			}
 		}
-		if (!isReserved) {
-			System.out.println("No available time slots");
-			response = ResponceService.responceMaker("No available time slots");
-		}
 		return response;
 	}
 
-	private HashMap<String, Object> processSpecificTime(Date date, String eid, ReserveForm reserveForm) {
-		reserveForm.setTime(reserveForm.getTime()); // 明示的に時間を設定
-		Reserve reserve = reserveForm.insertEntity();
-		String error = reserveService.reserveExceptionChecker(reserveForm);
+	private HashMap<String, Object> processSpecificTime(Reserve reserve) {
+		Reserve reserveDuplicated = reserveService.findReserveDuplicated(reserve);
 
-		if (error.isEmpty()) {
+		if (Objects.isNull(reserveDuplicated)) {
 			reserveRepository.saveAndFlush(reserve);
 			return ResponceService.responceMaker("Success");
 		} else {
-			return ResponceService.responceMaker(error);
+			return ResponceService.responceMaker("Duplicated");
 		}
 	}
 
@@ -183,5 +170,21 @@ public class EmployeeRestController {
 				return "エラーが発生しました";
 			}
 		}
+	}
+	
+	@PostMapping("flagCheck")
+	public List<String> flagCheck(@RequestBody HashMap<String, Object> requestBody) {
+	    List<String> list = new ArrayList<>(); // リストを初期化
+	    String[] id = {"1", "2", "3", "4", "5"};
+
+	    for (String s : id) {
+	    	List<Employee> employees = employeeRepository.findAllByEidAndStop_flag(s, "1");
+	        if (!employees.isEmpty()) {
+	            list.add("0");
+	        } else {
+	            list.add("1");
+	        }
+	    }
+	    return list;
 	}
 }

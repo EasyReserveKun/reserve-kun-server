@@ -44,5 +44,5 @@ public class Reserve {
     private String etc;
     
     @Column(name = "stop_flag")
-    private String stop_flag;
+    private String stopFlag;
 }

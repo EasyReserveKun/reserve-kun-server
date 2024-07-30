@@ -1,8 +1,3 @@
-/**
- * AdminRestController.java
- * 予約に関する情報を取り扱うエンドポイントを実装するクラス
- * @author のうみそ＠overload
- */
 package com.example.demo.controller;
 
 import java.util.HashMap;
@@ -21,6 +16,11 @@ import com.example.demo.service.TokenService;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * AdminRestController.java
+ * 管理者アカウントについての操作を実装したクラス
+ * @author のうみそ＠overload
+ */
 @AllArgsConstructor
 @RestController
 @CrossOrigin
@@ -45,7 +45,7 @@ public class AdminRestController {
 			// 存在しないアカウントならログイン失敗
 			Customer loginUser = loginService.findExistAccount(cid, password);
 			if (loginUser == null) {
-				responce = ResponceService.responceMaker("NotExist");
+				responce = ResponceService.responceMaker("NotFound");
 				return responce;
 			}
 

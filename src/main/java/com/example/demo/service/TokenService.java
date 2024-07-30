@@ -3,7 +3,6 @@ package com.example.demo.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.Customer;

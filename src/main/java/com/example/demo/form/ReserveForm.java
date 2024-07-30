@@ -29,9 +29,11 @@ public class ReserveForm {
 
     /**
      * 予約情報をReserve型にして返すメソッド
+     * @param cid 予約者のメールアドレス
+     * @param stopFlag これが予約停止情報なら1、普通の予約であればnull
      * @return Reserve型の予約情報
      */
-    public Reserve getEntity() {
+    public Reserve getEntity(String cid, String stopFlag) {
         // Reserveエンティティオブジェクトを取得するメソッド
 
         Reserve reserve = new Reserve();  // Reserveエンティティのインスタンスを作成します
@@ -40,24 +42,7 @@ public class ReserveForm {
         reserve.setEid(eid);  // 従業員IDを設定します
         reserve.setCid(cid);  // 顧客IDを設定します
         reserve.setEtc(etc);  // その他の情報を設定します
-        return reserve;  // 作成したReserveエンティティオブジェクトを返します
-    }
-    
-    /**
-     * 予約停止情報をReserve型にし、stopflagを立てて返すメソッド
-     * @return Reserve型の予約情報
-     */
-    public Reserve insertEntity() {
-        // Reserveエンティティオブジェクトを取得するメソッド
-
-        Reserve reserve = new Reserve();  // Reserveエンティティのインスタンスを作成します
-        reserve.setDate(date);  // 予約日を設定します
-        reserve.setTime(time);  // 予約時間を設定します
-        reserve.setEid(eid);  // 従業員IDを設定します
-        reserve.setCid(cid);  // 顧客IDを設定します
-        reserve.setEtc("予約停止中");  // その他の情報を設定します
-        reserve.setStop_flag("1");
-
+        reserve.setStopFlag(stopFlag);
         return reserve;  // 作成したReserveエンティティオブジェクトを返します
     }
 }

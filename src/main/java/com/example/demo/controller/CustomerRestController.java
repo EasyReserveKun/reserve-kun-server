@@ -32,7 +32,7 @@ import lombok.AllArgsConstructor;
 
 /**
  * CustomerRestController.java
- * チャットボットに関する操作を行うクラス
+ * 顧客情報についてのエンドポイントを実装したクラス
  * @author のうみそ＠overload
  */
 @AllArgsConstructor
@@ -65,7 +65,7 @@ public class CustomerRestController {
 			// 存在しないアカウントならログイン失敗
 			Customer loginUser = loginService.findExistAccount(cid, password);
 			if (loginUser == null) {
-				responce = ResponceService.responceMaker("NotExist");
+				responce = ResponceService.responceMaker("NotFound");
 				return responce;
 			}
 
@@ -276,8 +276,7 @@ public class CustomerRestController {
 		HashMap<String, Object> responce = new HashMap<>();
 		// ログイン成功時の処理
 		String cid = tokenService.extractUserId(requestBody.get("token"));
-		//int count = customerRepository.deleteAllByCid(cid);
-		int count=1;
+		int count = customerRepository.deleteAllByCid(cid);
 		if (count == 1) {
 			responce = ResponceService.responceMaker("Success");
 		} else {
