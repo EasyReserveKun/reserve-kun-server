@@ -54,7 +54,14 @@ public class AuthController {
 		String token = (String) requestBody.get("token");
 		HashMap<String, Object> responce = new HashMap<>();
 
-		if (tokenService.validateToken(token) && tokenService.extractIsAdmin(token)) {
+		// tokenが不正ならその時点で弾く
+		if(!tokenService.validateToken(token)) {
+			responce = ResponceService.statusCustom("Denied");
+			return responce;
+		}
+		
+		// Admin権限があるかを確認する
+		if (tokenService.extractIsAdmin(token)) {
 			responce = ResponceService.statusCustom("Accepted");
 		} else {
 			responce = ResponceService.statusCustom("Denied");

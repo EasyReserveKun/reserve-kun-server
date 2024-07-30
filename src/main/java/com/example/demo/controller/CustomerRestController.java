@@ -274,8 +274,16 @@ public class CustomerRestController {
 	@PostMapping("leave")
 	public HashMap<String, Object> leave(@RequestBody HashMap<String, String> requestBody) {
 		HashMap<String, Object> responce = new HashMap<>();
-		// ログイン成功時の処理
-		String cid = tokenService.extractUserId(requestBody.get("token"));
+		String token = requestBody.get("token");
+		
+		// tokenが不正ならその時点で弾く
+		if(!tokenService.validateToken(token)) {
+			responce = ResponceService.statusError();
+			return responce;
+		}
+		
+		// 退会の処理
+		String cid = tokenService.extractUserId(token);
 		int count = customerRepository.deleteAllByCid(cid);
 		if (count == 1) {
 			responce = ResponceService.statusSuccess();
