@@ -1,10 +1,10 @@
-package com.example.demo.config;
+package com.example.demo.service;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
 
-@Configuration
-public class ExpireMinutesConfig {
+@Service
+public class ExpireMinutesService {
 
 	@Value("${expire.minutes:3}")
 	private String expireMinutes;

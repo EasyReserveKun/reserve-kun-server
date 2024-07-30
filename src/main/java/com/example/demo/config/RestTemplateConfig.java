@@ -4,11 +4,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * RestTemplateをBeanに登録するConfigクラス
+ * @author のうみそ＠overload
+ */
 @Configuration
-public class CustomQuestionAnsweringConfig {
+public class RestTemplateConfig {
 
     @Bean
-    public RestTemplate restTemplate() {
+    RestTemplate restTemplate() {
         return new RestTemplate();
     }
 }

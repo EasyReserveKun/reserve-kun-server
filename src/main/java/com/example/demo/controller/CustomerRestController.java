@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.config.ExpireMinutesConfig;
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.Temporary;
 import com.example.demo.form.SignupForm;
 import com.example.demo.repository.CustomerRepository;
 import com.example.demo.repository.TemporaryRepository;
 import com.example.demo.service.EncodeService;
+import com.example.demo.service.ExpireMinutesService;
 import com.example.demo.service.LoginService;
 import com.example.demo.service.MailSenderServise;
 import com.example.demo.service.ResponceService;
@@ -47,7 +47,7 @@ public class CustomerRestController {
 	private final LoginService loginService;
 	private final MailSenderServise msService;
 	private final SignupService signupService;
-	private final ExpireMinutesConfig emConfig;
+	private final ExpireMinutesService emConfig;
 
 
 	/**
