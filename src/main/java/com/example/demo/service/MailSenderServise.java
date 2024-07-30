@@ -7,6 +7,11 @@ import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * MailSenderService.java
+ * 存在するアカウントを確認するための機能を実装するクラス
+ * @author のうみそ＠overload
+ */
 @Service
 @AllArgsConstructor
 public class MailSenderServise {

@@ -45,14 +45,14 @@ public class AdminRestController {
 			// 存在しないアカウントならログイン失敗
 			Customer loginUser = loginService.findExistAccount(cid, password);
 			if (loginUser == null) {
-				responce = ResponceService.responceMaker("NotFound");
+				responce = ResponceService.statusCustom("NotFound");
 				return responce;
 			}
 
 			// アカウントが管理者用でなければログイン失敗
 			Boolean isAdmin = (Objects.nonNull(loginUser.getAdmin())) ? true : false;
 			if (!isAdmin) {
-				responce = ResponceService.responceMaker("Denied");
+				responce = ResponceService.statusCustom("Denied");
 				return responce;
 			}
 			
@@ -60,11 +60,11 @@ public class AdminRestController {
 			// ログイン成功時の処理
 			String token = tokenService.generateToken(loginUser.getCname(), loginUser.getCid(),
 					isAdmin);
-			responce = ResponceService.responceMaker("Success");
+			responce = ResponceService.statusSuccess();
 			responce.put("token", token);
 			return responce;
 		} catch (Exception e) {
-			responce = ResponceService.responceMaker("Error");
+			responce = ResponceService.statusError();
 			System.err.println(e);
 			return responce;
 		}

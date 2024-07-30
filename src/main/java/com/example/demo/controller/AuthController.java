@@ -37,9 +37,9 @@ public class AuthController {
 		HashMap<String, Object> responce = new HashMap<>();
 
 		if (tokenService.validateToken(token)) {
-			responce = ResponceService.responceMaker("Accepted");
+			responce = ResponceService.statusCustom("Accepted");
 		} else {
-			responce = ResponceService.responceMaker("Denied");
+			responce = ResponceService.statusCustom("Denied");
 		}
 		return responce;
 	}
@@ -55,9 +55,9 @@ public class AuthController {
 		HashMap<String, Object> responce = new HashMap<>();
 
 		if (tokenService.validateToken(token) && tokenService.extractIsAdmin(token)) {
-			responce = ResponceService.responceMaker("Accepted");
+			responce = ResponceService.statusCustom("Accepted");
 		} else {
-			responce = ResponceService.responceMaker("Denied");
+			responce = ResponceService.statusCustom("Denied");
 		}
 		return responce;
 	}

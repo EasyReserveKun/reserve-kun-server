@@ -44,7 +44,7 @@ public class TokenService {
     /**
      * トークンからユーザーIDを抽出する
      * @param token JWTトークン
-     * @return ユーザーID
+     * @return ユーザーID(メールアドレス)
      */
     public String extractUserId(String token) {
         Claims claims = extractAllClaims(token);
@@ -54,7 +54,7 @@ public class TokenService {
     /**
      * トークンから管理者フラグを抽出する
      * @param token JWTトークン
-     * @return 管理者フラグ
+     * @return 管理者ならtrue、そうでなければfalse
      */
     public boolean extractIsAdmin(String token) {
         Claims claims = extractAllClaims(token);
@@ -64,7 +64,7 @@ public class TokenService {
     /**
      * トークンの有効期限を抽出する
      * @param token JWTトークン
-     * @return 有効期限の日時
+     * @return Date型の有効期限の日時
      */
     public Date extractExpiration(String token) {
         Claims claims = extractAllClaims(token);
@@ -110,7 +110,7 @@ public class TokenService {
     /**
      * クレームと主題を使ってトークンを生成する
      * @param claims クレーム
-     * @param subject 主題（通常はユーザー名）
+     * @param subject 主題（ユーザー名）
      * @return 生成されたJWTトークン
      */
     private String createToken(Map<String, Object> claims, String subject) {
