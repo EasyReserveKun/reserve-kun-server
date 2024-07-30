@@ -276,8 +276,7 @@ public class CustomerRestController {
 		HashMap<String, Object> responce = new HashMap<>();
 		// ログイン成功時の処理
 		String cid = tokenService.extractUserId(requestBody.get("token"));
-		//int count = customerRepository.deleteAllByCid(cid);
-		int count=1;
+		int count = customerRepository.deleteAllByCid(cid);
 		if (count == 1) {
 			responce = ResponceService.responceMaker("Success");
 		} else {
