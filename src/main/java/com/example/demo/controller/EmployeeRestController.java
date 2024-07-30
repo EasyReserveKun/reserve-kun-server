@@ -6,6 +6,7 @@
 package com.example.demo.controller;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -183,5 +184,21 @@ public class EmployeeRestController {
 				return "エラーが発生しました";
 			}
 		}
+	}
+	
+	@PostMapping("flagCheck")
+	public List<String> flagCheck(@RequestBody HashMap<String, Object> requestBody) {
+	    List<String> list = new ArrayList<>(); // リストを初期化
+	    String[] id = {"1", "2", "3", "4", "5"};
+
+	    for (String s : id) {
+	    	List<Employee> employees = employeeRepository.findAllByEidAndStop_flag(s, "1");
+	        if (!employees.isEmpty()) {
+	            list.add("0");
+	        } else {
+	            list.add("1");
+	        }
+	    }
+	    return list;
 	}
 }
