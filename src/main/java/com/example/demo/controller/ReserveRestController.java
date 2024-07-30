@@ -30,6 +30,14 @@ import lombok.AllArgsConstructor;
  * @author のうみそ＠overload
  */
 
+/**
+ * @author isa
+ *
+ */
+/**
+ * @author isa
+ *
+ */
 @AllArgsConstructor
 @RestController
 @CrossOrigin
@@ -118,7 +126,7 @@ public class ReserveRestController {
 	 * @param requestBody 絞り込みを行うための従業員番号
 	 * @return 全て、またはeidで絞り込んだ予約情報
 	 */
-	@PostMapping("/employeeCheck")
+	@PostMapping("/employeecheck")
 	public List<Map<String, Object>> employeeCheck(@RequestBody HashMap<String, String> requestBody) {
 		List<Map<String, Object>> list;
 		String eid = requestBody.get("eid");
@@ -130,6 +138,12 @@ public class ReserveRestController {
 		return list;
 	}
 
+
+	/**
+	 * 管理者画面で予約をキャンセルするためのエンドポイント
+	 * @param reserveForm 予約された日付と時間と従業員
+	 * @return キャンセルの可否
+	 */
 	@PostMapping("/cancel")
 	public String cancel(@RequestBody ReserveForm reserveForm) {
 
@@ -143,6 +157,11 @@ public class ReserveRestController {
 		}
 	}
 
+	/**
+	 * 管理者画面で予約を停止している日時を確認するためのエンドポイント
+	 * @param  ReserveCheckForm　使用してません
+	 * @return 予約を停止している日時と従業員IDを取得
+	 */
 	@PostMapping("/unavailable")
 	public List<String> unavailable(@RequestBody ReserveCheckForm reserveCheckForm) {
 		// @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
@@ -153,6 +172,7 @@ public class ReserveRestController {
 		return list; // 時間のリストをレスポンスとして返します
 	}
 
+	
 	@GetMapping("reservelist")
 	public HashMap<String, Object> customerlist() {
 		HashMap<String, Object> responce = new HashMap<>();
@@ -163,6 +183,11 @@ public class ReserveRestController {
 		return responce;
 	}
     
+	/**
+	 * ユーザー側でサーチする際に、受付停止中の従業員IDを区別するためのエンドポイント
+	 * @param requestBody 絞り込みを行うための従業員番号
+	 * @return 予約の可否
+	 */
 	@PostMapping("/available/flag")
 	public String available(@RequestBody HashMap<String, Object> requestBody) {
 		// @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
