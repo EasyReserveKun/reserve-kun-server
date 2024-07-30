@@ -13,13 +13,13 @@ import lombok.AllArgsConstructor;
 public class ScheduleService {
 	
 	private final TemporaryRepository temporaryRepository;
-	private final ExpireMinutesService emConfig;
+	private final ExpireMinutesService emService;
 	
 	@Transactional
 	@Scheduled(cron = "0 0,30 * * * *")
    public void scheduledDeleteExpire() {
 		System.out.println("失効した仮登録情報を削除しました");
-       temporaryRepository.deleteExpire(emConfig.getCodeExpiryMinutes());
+       temporaryRepository.deleteExpire(emService.getCodeExpiryMinutes());
    }
 
 }
