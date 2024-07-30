@@ -9,15 +9,15 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-//--------------------------------------------------//
-//  Reserve.java
-//  予約情報を保持するエンティティクラス
-//--------------------------------------------------//
-
-@Data  // 基本的なメソッドの自動生成
+/**
+ * Reserve.java
+ * 予約情報テーブルと連携するEntityクラス
+ * @author のうみそ＠overload
+ */
+@Data
 @Entity  // エンティティクラスであることの宣言
-@IdClass(ReserveCompositeKey.class)  // 複合キーの指定
-@Table(name = "t_reserve")  // "t_reserve"テーブルの指定
+@IdClass(ReserveCompositeKey.class)
+@Table(name = "t_reserve")
 public class Reserve {
 
     // 日付(主キー)

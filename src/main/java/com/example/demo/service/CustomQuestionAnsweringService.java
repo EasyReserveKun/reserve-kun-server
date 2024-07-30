@@ -12,6 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * CustomQuestionAnsweringService.java
+ * チャットボットに纏わる処理を実装するクラス
+ * @author のうみそ＠overload
+ */
 @Service
 public class CustomQuestionAnsweringService {
 
@@ -34,6 +39,11 @@ public class CustomQuestionAnsweringService {
         this.restTemplate = restTemplate;
     }
 
+    /**
+     * チャットボットへ質問を送信し、返答を受け取るためのメソッド
+     * @param 送信する質問文
+     * @return 送信した質問に最も近い質問と回答のペアと、信頼度スコア等の詳細情報
+     */
     public Map<String, Object> getAnswer(String question) {
         String url = endpoint + "language/:query-knowledgebases?projectName=" + projectName + "&api-version=2021-10-01&deploymentName=" + deploymentName;
 
@@ -45,8 +55,6 @@ public class CustomQuestionAnsweringService {
         requestBody.put("top", 1);
         requestBody.put("question", question);
         requestBody.put("confidenceScoreThreshold", 0.3);
-
-
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 

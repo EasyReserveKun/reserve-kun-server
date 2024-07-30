@@ -9,6 +9,11 @@ import com.example.demo.repository.CustomerRepository;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * LoginService.java
+ * 存在するアカウントを確認するための機能を実装するクラス
+ * @author のうみそ＠overload
+ */
 @Service
 @AllArgsConstructor
 public class LoginService {
@@ -16,7 +21,7 @@ public class LoginService {
 	private final CustomerRepository customerRepository;
 
 	/**
-	 * 入力されたログイン情報を受け取り一致するアカウントが存在するか確認するメソッド
+	 * メールアドレスとパスワードが一致するアカウントが存在するか確認するメソッド
 	 * @param cid 入力されたID(メールアドレス)
 	 * @param password 入力されたパスワード
 	 * @return アカウントが存在すればアカウント情報を、存在しなかったらnullを返す
@@ -29,6 +34,11 @@ public class LoginService {
 		return optionalCustomer.get();
 	}
 
+	/**
+	 * メールアドレスが一致するアカウントが存在するか確かめるメソッド
+	 * @param cid ID(メールアドレス)
+	 * @return アカウントが存在すればアカウント情報を、存在しなかったらnullを返す
+	 */
 	public Customer findExistAccountFromCid(String cid) {
 		Optional<Customer> optionalCustomer = customerRepository.findByCid(cid);
 		if(optionalCustomer.isEmpty()) {

@@ -6,14 +6,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-//--------------------------------------------------//
-//　 Customer.java
-//　　顧客情報を保持するエンティティクラス
-//--------------------------------------------------//
-
-@Data  // 基本的なメソッドの自動生成
-@Entity  // エンティティクラスであることの宣言
-@Table(name = "m_customer")  // "m_customer"テーブルの指定
+/**
+ * Customer.java
+ * 顧客情報テーブルと連携するEntityクラス
+ * @author のうみそ＠overload
+ */
+@Data
+@Entity
+@Table(name = "m_customer")
 public class Customer {
 
 	// 顧客ID (主キー)

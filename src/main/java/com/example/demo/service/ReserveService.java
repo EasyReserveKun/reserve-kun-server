@@ -10,8 +10,8 @@ import com.example.demo.repository.ReserveRepository;
 
 import lombok.AllArgsConstructor;
 
-
 /**
+ * ReserveService.java
  * 予約に関する処理を実装するクラス
  * @author のうみそ＠overload
  */

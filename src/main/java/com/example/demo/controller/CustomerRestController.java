@@ -65,24 +65,24 @@ public class CustomerRestController {
 			// 存在しないアカウントならログイン失敗
 			Customer loginUser = loginService.findExistAccount(cid, password);
 			if (loginUser == null) {
-				responce = ResponceService.responceMaker("NotFound");
+				responce = ResponceService.statusCustom("NotFound");
 				return responce;
 			}
 
 			// アカウントが管理者用ならログイン失敗
 			Boolean isAdmin = (Objects.nonNull(loginUser.getAdmin())) ? true : false;
 			if (isAdmin) {
-				responce = ResponceService.responceMaker("Denied");
+				responce = ResponceService.statusCustom("Denied");
 				return responce;
 			}
 
 			// ログイン成功時の処理
 			String token = tokenService.generateToken(loginUser.getCname(), loginUser.getCid(), isAdmin);
-			responce = ResponceService.responceMaker("Success");
+			responce = ResponceService.statusSuccess();
 			responce.put("token", token);
 			return responce;
 		} catch (Exception e) {
-			responce = ResponceService.responceMaker("Error");
+			responce = ResponceService.statusError();
 			System.err.println(e);
 			return responce;
 		}
@@ -103,13 +103,13 @@ public class CustomerRestController {
 		// 既に同じIDで登録されている場合はエラーを返す
 		Customer signupUser = loginService.findExistAccount(customerForm.getCid(), customerForm.getPassword());
 		if (signupUser != null) {
-			responce = ResponceService.responceMaker("Duplicate");
+			responce = ResponceService.statusCustom("Duplicate");
 			return responce;
 		}
 
 		if (!EncodeService.canEncodeToSJIS(
 				new String[] { customerForm.getCid(), customerForm.getCname(), customerForm.getPassword() })) {
-			responce = ResponceService.responceMaker("Error");
+			responce = ResponceService.statusError();
 			return responce;
 		}
 
@@ -127,10 +127,10 @@ public class CustomerRestController {
 					+ "※ご返信いただいてもお答えできませんので、ご了承ください。";
 
 			msService.sendSimpleMessage(customerForm.getCid(), title, message);
-			responce = ResponceService.responceMaker("Success");
+			responce = ResponceService.statusSuccess();
 			return responce;
 		} catch (Exception e) {
-			responce = ResponceService.responceMaker("Error");
+			responce = ResponceService.statusError();
 			return responce;
 		}
 	}
@@ -150,7 +150,7 @@ public class CustomerRestController {
 
 		// uuidが存在しなかったらエラーを返す
 		if (verifyCustomer == null) {
-			responce = ResponceService.responceMaker("NotFound");
+			responce = ResponceService.statusCustom("NotFound");
 			return responce;
 		}
 
@@ -159,14 +159,14 @@ public class CustomerRestController {
 		LocalDateTime dateExpire = verifyCustomer.getDate().plusMinutes(emService.getCodeExpiryMinutes());
 		if (dateNow.isAfter(dateExpire)) {
 			temporaryRepository.delete(verifyCustomer);
-			responce = ResponceService.responceMaker("NotFound");
+			responce = ResponceService.statusCustom("NotFound");
 			return responce;
 		}
 
 		// 既に同じIDで登録されている場合はエラーを返す
 		Customer existingUser = loginService.findExistAccountFromCid(verifyCustomer.getCid());
 		if (existingUser != null) {
-			responce = ResponceService.responceMaker("Duplicate");
+			responce = ResponceService.statusCustom("Duplicate");
 			return responce;
 		}
 
@@ -180,9 +180,9 @@ public class CustomerRestController {
 			// m_temporaryテーブルから削除
 			temporaryRepository.delete(verifyCustomer);
 			// レスポンスを返す
-			responce = ResponceService.responceMaker("Success");
+			responce = ResponceService.statusSuccess();
 		} catch (Exception e) {
-			responce = ResponceService.responceMaker("Error");
+			responce = ResponceService.statusError();
 			return responce;
 		}
 
@@ -199,11 +199,11 @@ public class CustomerRestController {
 		HashMap<String, Object> responce = new HashMap<>();
 		try {
 			String token = requestBody.get("token");
-			responce = ResponceService.responceMaker("Success");
+			responce = ResponceService.statusSuccess();
 			responce.put("name", tokenService.extractUsername(token));
 			return responce;
 		} catch (Exception e) {
-			responce = ResponceService.responceMaker("Error");
+			responce = ResponceService.statusError();
 			return responce;
 		}
 	}
@@ -216,7 +216,7 @@ public class CustomerRestController {
 	public HashMap<String, Object> templist() {
 		HashMap<String, Object> responce = new HashMap<>();
 		List<Temporary> tempList = temporaryRepository.findAll();
-		responce = ResponceService.responceMaker("Success");
+		responce = ResponceService.statusSuccess();
 		responce.put("results", tempList);
 		responce.put("type", "Temporary");
 		return responce;
@@ -239,7 +239,7 @@ public class CustomerRestController {
 			System.err.println(e);
 		}
 
-		responce = ResponceService.responceMaker("Success");
+		responce = ResponceService.statusSuccess();
 		responce.put("results", customerList);
 		responce.put("type", "Customer");
 		return responce;
@@ -274,13 +274,21 @@ public class CustomerRestController {
 	@PostMapping("leave")
 	public HashMap<String, Object> leave(@RequestBody HashMap<String, String> requestBody) {
 		HashMap<String, Object> responce = new HashMap<>();
-		// ログイン成功時の処理
-		String cid = tokenService.extractUserId(requestBody.get("token"));
+		String token = requestBody.get("token");
+		
+		// tokenが不正ならその時点で弾く
+		if(!tokenService.validateToken(token)) {
+			responce = ResponceService.statusError();
+			return responce;
+		}
+		
+		// 退会の処理
+		String cid = tokenService.extractUserId(token);
 		int count = customerRepository.deleteAllByCid(cid);
 		if (count == 1) {
-			responce = ResponceService.responceMaker("Success");
+			responce = ResponceService.statusSuccess();
 		} else {
-			responce = ResponceService.responceMaker("Error");
+			responce = ResponceService.statusError();
 		}
 		return responce;
 	}

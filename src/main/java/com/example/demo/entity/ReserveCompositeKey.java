@@ -7,14 +7,14 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-//--------------------------------------------------//
-//　　ReserveRestController.java
-//　　予約情報のキーを保持する埋め込みクラス
-//--------------------------------------------------//
-
-@Data  // 基本的なメソッドの自動生成
-@Embeddable  // このクラスをCompositeKey用のクラスとして扱う
-@Table(name = "t_reserve")  // "t_reserve"テーブルの指定
+/**
+ * ReserveCompositeKey.java
+ * 予約情報テーブルの複合キーを扱うEntityクラス
+ * @author のうみそ＠overload
+ */
+@Data 
+@Embeddable
+@Table(name = "t_reserve")
 public class ReserveCompositeKey {
 
 	// 予約日
