@@ -208,7 +208,7 @@ public class CustomerRestController {
 		}
 	}
 
-	public String generateCode() {
+	private String generateCode() {
 		String code;
 		while (true) {
 			code = String.format("%06d", (int) (Math.random() * 1000000));
@@ -219,7 +219,7 @@ public class CustomerRestController {
 		return code;
 	}
 
-	public Boolean isQuadrapleSameDigits(String number) {
+	private Boolean isQuadrapleSameDigits(String number) {
 		for (int i = 1; i < number.length() - 3; i++) {
 			char digit1 = number.charAt(i);
 			char digit2 = number.charAt(i + 1);
