@@ -28,7 +28,13 @@ public interface ReserveRepository extends JpaRepository<Reserve, ReserveComposi
 	String findAllTimesByDateAndEidAndTime(@Param("date") Date date, @Param("eid") String eid,
 			@Param("time") String time);
 
-	@Query(value = "SELECT * FROM t_reserve t JOIN m_employee m ON t.eid = m.eid WHERE t.stop_flag = :stop_flag", nativeQuery = true)
+	@Query(
+		    value = "SELECT * FROM t_reserve t " +
+		            "JOIN m_employee m ON t.eid = m.eid " +
+		            "WHERE t.stop_flag = :stop_flag " +
+		            "ORDER BY t.date ASC, t.time ASC",
+		    nativeQuery = true
+		)
 	List<String> findAllByFlag(@Param("stop_flag") String stop_flag);
 
 	// 予約情報をユーザーでフィルタして検索
