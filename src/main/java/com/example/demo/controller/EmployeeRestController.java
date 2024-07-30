@@ -40,22 +40,6 @@ public class EmployeeRestController {
 	private final TokenService tokenService;
 
 	/**
-	 * 予約情報をデータベースに登録するエンドポイント
-	 * @param reserveForm 予約の詳細情報を持つデータ
-	 * @return　予約処理のステータス
-	 */
-	@GetMapping("list")
-	public HashMap<String, Object> list() {
-		HashMap<String, Object> responce = new HashMap<>();
-		List<Employee> empList = employeeRepository.findAll();
-		responce.put("results", empList);
-		responce.put("type", "Employee");
-		responce.put("status", "success");
-		return responce;
-
-	}
-
-	/**
 	 * 管理者側で行う予約停止のためのエンドポイント
 	 * @param reserveForm 予約の詳細情報を持つデータ
 	 * @return　予約処理のステータス

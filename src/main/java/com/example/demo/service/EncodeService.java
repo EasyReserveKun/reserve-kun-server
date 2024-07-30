@@ -15,7 +15,7 @@ public class EncodeService {
 	
 	/**
 	 * 配列内の全ての文字列がSJISにエンコードできるか確認する
-	 * @param 確認を行いたい文字の配列
+	 * @param inputs 確認を行いたい文字の配列
 	 * @return SJISにエンコード可能ならtrue、そうでなければfalse
 	 */
 	public static boolean canEncodeToSJIS(String[] inputs) {

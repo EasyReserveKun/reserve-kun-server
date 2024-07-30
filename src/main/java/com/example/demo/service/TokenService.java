@@ -126,7 +126,6 @@ public class TokenService {
     /**
      * トークンが有効かどうかを検証する
      * @param token JWTトークン
-     * @param username ユーザー名
      * @return トークンが有効ならtrue、そうでない場合はfalse
      */
     public Boolean validateToken(String token) {

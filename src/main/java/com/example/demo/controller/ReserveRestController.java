@@ -150,17 +150,14 @@ public class ReserveRestController {
 
 	/**
 	 * 管理者画面で予約を停止している日時を確認するためのエンドポイント
-	 * @param  ReserveCheckForm　使用してません
 	 * @return 予約を停止している日時と従業員IDを取得
 	 */
 	@PostMapping("/unavailable")
-	public List<String> unavailable(@RequestBody ReserveCheckForm reserveCheckForm) {
-		// @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
-
-		// 日付と社員IDに基づいてリポジトリから時間のリストを取得します
+	public List<String> unavailable() {
+		// 日付と社員IDに基づいてリポジトリから時間のリストを取得
 		List<String> list = reserveRepository.findAllByFlag("1");
 
-		return list; // 時間のリストをレスポンスとして返します
+		return list; // 時間のリストをレスポンスとして返す
 	}
 
 	
@@ -181,14 +178,12 @@ public class ReserveRestController {
 	 */
 	@PostMapping("/available/flag")
 	public String available(@RequestBody HashMap<String, Object> requestBody) {
-		// @ModelAttributeでバインディングされたHTTP POSTリクエストを処理するメソッドです
-
 	  String eid = (String) requestBody.get("eid");
-		// 日付と社員IDに基づいてリポジトリから時間のリストを取得します
+		// 社員IDに基づいてリポジトリから時間のリストを取得
 		int count = employeeRepository.findAllByEid(eid);
 
 		if (count == 1) {
-			return "現在は予約を受け付けておりません"; // 時間のリストをレスポンスとして返します
+			return "現在は予約を受け付けておりません";
 		} else {
 			return "予約可能です";
 			

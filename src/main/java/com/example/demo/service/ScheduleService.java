@@ -22,7 +22,6 @@ public class ScheduleService {
 	
 	/**
 	 * 失効した仮登録情報を削除するメソッド
-	 * @return void
 	 */
 	@Transactional
 	@Scheduled(cron = "0 0,30 * * * *")
