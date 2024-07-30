@@ -1,9 +1,3 @@
-/**
- * ReserveRestController.java
- * 予約に関する情報を取り扱うエンドポイントを実装するクラス
- * @author のうみそ＠overload
- */
-
 package com.example.demo.controller;
 
 import java.util.HashMap;
@@ -31,6 +25,12 @@ import com.example.demo.service.TokenService;
 
 import lombok.AllArgsConstructor;
 
+
+/**
+ * ReserveRestController.java
+ * 予約に関する情報を取り扱うエンドポイントを実装するクラス
+ * @author のうみそ＠overload
+ */
 
 @AllArgsConstructor
 @RestController

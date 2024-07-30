@@ -1,8 +1,3 @@
-/**
- * EmployeeRestController.java
- * 従業員情報に関する情報を取り扱うクラス
- * @author のうみそ＠overload
- */
 package com.example.demo.controller;
 
 import java.sql.Date;
@@ -28,6 +23,11 @@ import com.example.demo.service.TokenService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
+/**
+ * EmployeeRestController.java
+ * 従業員情報についてのエンドポイントを実装したクラス
+ * @author のうみそ＠overload
+ */
 @AllArgsConstructor
 @RestController
 @CrossOrigin

@@ -32,7 +32,7 @@ import lombok.AllArgsConstructor;
 
 /**
  * CustomerRestController.java
- * チャットボットに関する操作を行うクラス
+ * 顧客情報についてのエンドポイントを実装したクラス
  * @author のうみそ＠overload
  */
 @AllArgsConstructor

@@ -1,9 +1,3 @@
-/**
- * QuestionAnsweringController.java
- * チャットボットに関する操作を行うクラス
- * @author のうみそ＠overload
- */
-
 package com.example.demo.controller;
 
 import java.util.Map;
@@ -19,6 +13,11 @@ import com.example.demo.service.CustomQuestionAnsweringService;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * QuestionAnsweringController.java
+ * チャットボットに関するエンドポイントを実装するクラス
+ * @author のうみそ＠overload
+ */
 @RestController
 @AllArgsConstructor
 public class QuestionAnsweringController {
