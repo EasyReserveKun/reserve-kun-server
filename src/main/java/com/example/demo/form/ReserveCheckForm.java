@@ -5,6 +5,7 @@ import java.sql.Date;
 import lombok.Data;
 
 /**
+ * ReserveCheckForm.java
  * 予約確認のため送られてきた情報を保持するフォームクラス
  * @author のうみそ＠overload
  */

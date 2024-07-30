@@ -17,6 +17,7 @@ import javax.crypto.SecretKey;
 
 
 /**
+ * TokenService.java
  * tokenの生成や照合を行うメソッドを実装したクラス
  * @author のうみそ＠overload
  */

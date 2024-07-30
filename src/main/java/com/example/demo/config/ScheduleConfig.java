@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
+ * ScheduleConfig.java
  * スケジューラの設定を行うためのConfigクラス
  * @author のうみそ＠overload
  */
