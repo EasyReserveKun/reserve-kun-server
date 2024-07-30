@@ -83,7 +83,7 @@ public class ReserveRestController {
 
 	/**
 	 * 予約可能な時間帯を確認するためのエンドポイント
-	 * @param reserveForm 予約する日付と従業員
+	 * @param reserveCheckForm 予約する日付と従業員
 	 * @return　その日、その従業が予約を受け入れられる時間のリスト
 	 */
 	@PostMapping("/available")

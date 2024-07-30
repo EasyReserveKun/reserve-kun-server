@@ -33,7 +33,7 @@ public class SignupService {
 
 	/**
 	 * 認証コードを基に仮登録情報を取得するメソッド
-	 * @param もとになる認証コード
+	 * @param uuid もとになる認証コード
 	 * @return 一致するものがあれば仮登録情報、なければnullを返す
 	 */
 	public Temporary getCustomerFormFromUuid(String uuid) {

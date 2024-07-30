@@ -41,7 +41,7 @@ public class CustomQuestionAnsweringService {
 
     /**
      * チャットボットへ質問を送信し、返答を受け取るためのメソッド
-     * @param 送信する質問文
+     * @param question 送信する質問文
      * @return 送信した質問に最も近い質問と回答のペアと、信頼度スコア等の詳細情報
      */
     public Map<String, Object> getAnswer(String question) {
