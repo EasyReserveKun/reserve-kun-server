@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.Reserve;
-import com.example.demo.form.BookingCheckerForm;
 import com.example.demo.form.ReserveCheckForm;
 import com.example.demo.form.ReserveForm;
-import com.example.demo.form.ReserveFormTemp;
 import com.example.demo.repository.EmployeeRepository;
 import com.example.demo.repository.ReserveRepository;
 import com.example.demo.service.EncodeService;
@@ -50,7 +48,7 @@ public class ReserveRestController {
 	 * @return　status:予約処理のステータス を含むjson
 	 */
 	@PostMapping("/insert")
-	public HashMap<String, Object> insert(@RequestBody ReserveFormTemp reserveForm) {
+	public HashMap<String, Object> insert(@RequestBody ReserveForm reserveForm) {
 		HashMap<String, Object> responce = new HashMap<>();
 		String cid = null;
 		try {
@@ -61,13 +59,12 @@ public class ReserveRestController {
 			return responce;
 		}
 
-		Reserve reserve = reserveForm.getEntity();
-		reserve.setCid(cid);
+		Reserve reserve = reserveForm.getEntity(cid, null);
 
-		// エラーチェック
-		String error = reserveService.reserveExceptionCheck(reserveForm.getDate(), reserveForm.getTime(),
-				reserveForm.getEid(), cid);
-
+		// 予約の重複チェック
+		String error = reserveService.checkReserveDuplicatedOrDoubled(reserve);
+		
+		// 文字コードチェック
 		if (!EncodeService.canEncodeToSJIS(new String[]{ reserveForm.getEtc() })) {
 			responce = ResponceService.responceMaker("Error");
 			return responce;
