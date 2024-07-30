@@ -15,6 +15,6 @@ public class ReserveCheckForm {
 
     private String eid;  // 従業員ID
     
-    private String stopFlag;
+    private String stopFlag;　//管理者側で入れた予約停止情報を区別するためのフラグ
 
 }
