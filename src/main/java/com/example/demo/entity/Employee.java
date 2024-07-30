@@ -16,19 +16,31 @@ import lombok.Data;
 @Table(name = "m_employee")
 public class Employee {
 
-	// 従業員ID (主キー)
+    /**
+     * コンシェルジュID
+     * 実際にはindexが振られる
+     * 主キー
+     */
     @Id
     @Column(name = "eid")
     public Integer eid;
 
-    // 従業員名
+    /**
+     * コンシェルジュの指名
+     */
     @Column(name = "ename")
     public String ename;
 
-    // カテゴリ
+    /**
+     * コンシェルジュの相談カテゴリ
+     */
     @Column(name = "category")
     public String category;
     
+    /**
+     * 予約停止フラグ
+     * String型で、停止されていれば1、そうでなければnull
+     */
     @Column(name = "stop_flag")
     public String stop_flag;
 

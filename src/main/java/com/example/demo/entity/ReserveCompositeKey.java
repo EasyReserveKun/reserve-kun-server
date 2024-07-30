@@ -17,15 +17,21 @@ import lombok.Data;
 @Table(name = "t_reserve")
 public class ReserveCompositeKey {
 
-	// 予約日
+    /**
+     * 予約日
+     */
     @Column(name = "date")
     private Date date;
 
-    // 予約時間
+    /**
+     * 予約時間
+     */
     @Column(name = "time")
     private String time;
 
-    // 従業員ID
+    /**
+     * コンシェルジュのID
+     */
     @Column(name = "eid")
     private String eid;
 }

@@ -18,24 +18,37 @@ import lombok.Data;
 @Table(name = "m_temporary")  // "m_temporary"テーブルの指定
 public class Temporary {
 
-	// 顧客ID (主キー)
+    /**
+     * 顧客ID
+     * 主キー
+     */
     @Id
     @Column(name = "cid")
     public String cid;
 
-    // 顧客名
+    /**
+     * 顧客名
+     */
     @Column(name = "cname")
     public String cname;
 
-    // パスワード
+    /**
+     * パスワード
+     */
     @Column(name = "password")
     public String password;
     
-    // 仮登録日時
+    /**
+     * 仮登録日時
+     * LocalDateTime型
+     */
     @Column(name = "date")
     public LocalDateTime date;
     
-    // 仮登録コード
+    /**
+     * 仮登録コード
+     * String型で、6桁のランダムな数字
+     */
     @Column(name = "uuid")
     public String uuid;
 
