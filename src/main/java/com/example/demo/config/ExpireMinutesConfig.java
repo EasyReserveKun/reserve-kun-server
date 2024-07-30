@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ExpireMinutesConfig {
 
-	@Value("${expire.minutes}")
+	@Value("${expire.minutes:3}")
 	private String expireMinutes;
 
 	public String getCodeExpiryMinutesString() {
