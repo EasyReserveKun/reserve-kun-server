@@ -47,7 +47,7 @@ public class CustomerRestController {
 	private final LoginService loginService;
 	private final MailSenderServise msService;
 	private final SignupService signupService;
-	private final ExpireMinutesService emConfig;
+	private final ExpireMinutesService emService;
 
 
 	/**
@@ -122,7 +122,7 @@ public class CustomerRestController {
 			String message = customerForm.getCname() + "様\n\n" + "ACE社コンシェルジュデスク予約サービス「かんたん予約くん」にご登録いただきありがとうございます。\n\n"
 					+ "会員情報の「仮登録」を受け付けました。\n" + "※登録はまだ完了していません。\n\n" + "当サービスをご利用いただくには「本登録」の手続きが必要です。\n"
 					+ "下記の認証コードを入力して手続きを完了してください。\n\n" + "認証コード：" + code + "\n\n"
-					+ emConfig.getCodeExpiryMinutesString() + "分以内に手続きが完了しない場合、仮登録が無効となります。\n"
+					+ emService.getCodeExpiryMinutesString() + "分以内に手続きが完了しない場合、仮登録が無効となります。\n"
 					+ "その際は再度はじめから登録をやり直してください。\n\n" + "※このメールは、送信専用メールアドレスから配信されています。\n"
 					+ "※ご返信いただいてもお答えできませんので、ご了承ください。";
 
@@ -156,7 +156,7 @@ public class CustomerRestController {
 
 		// 認証コードが期限切れならエラーを返す
 		LocalDateTime dateNow = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-		LocalDateTime dateExpire = verifyCustomer.getDate().plusMinutes(emConfig.getCodeExpiryMinutes());
+		LocalDateTime dateExpire = verifyCustomer.getDate().plusMinutes(emService.getCodeExpiryMinutes());
 		if (dateNow.isAfter(dateExpire)) {
 			temporaryRepository.delete(verifyCustomer);
 			responce = ResponceService.responceMaker("NotFound");
