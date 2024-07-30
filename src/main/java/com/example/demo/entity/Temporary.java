@@ -8,11 +8,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-//--------------------------------------------------//
-//　 Temporary.java
-//　　仮登録情報を保持するエンティティクラス
-//--------------------------------------------------//
-
+/**
+ * Temporary.java
+ * 仮登録情報テーブルと連携するEntityクラス
+ * @author のうみそ＠overload
+ */
 @Data  // 基本的なメソッドの自動生成
 @Entity  // エンティティクラスであることの宣言
 @Table(name = "m_temporary")  // "m_temporary"テーブルの指定

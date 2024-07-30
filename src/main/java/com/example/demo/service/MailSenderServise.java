@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class MailSenderServise {
 
-	private final JavaMailSender emailSender;
+	private final JavaMailSender mailSender;
 
 	@Async
 	public void sendSimpleMessage(String to, String subject, String text) {
@@ -21,7 +21,7 @@ public class MailSenderServise {
 		mail.setSubject(subject);
 		mail.setText(text);
 		try {
-			emailSender.send(mail);
+			mailSender.send(mail);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
