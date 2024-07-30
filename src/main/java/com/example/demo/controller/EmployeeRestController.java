@@ -87,10 +87,10 @@ public class EmployeeRestController {
 
 				if (Objects.isNull(reserveDuplicated)) {
 					reserveRepository.save(reserve);
-					response = ResponceService.responceMaker("Success");
+					response = ResponceService.statusSuccess();
 				} else {
 					System.out.println("Duplicated");
-					response = ResponceService.responceMaker("Duplicated");
+					response = ResponceService.statusCustom("Duplicated");
 				}
 			}
 		}
@@ -102,9 +102,9 @@ public class EmployeeRestController {
 
 		if (Objects.isNull(reserveDuplicated)) {
 			reserveRepository.saveAndFlush(reserve);
-			return ResponceService.responceMaker("Success");
+			return ResponceService.statusSuccess();
 		} else {
-			return ResponceService.responceMaker("Duplicated");
+			return ResponceService.statusCustom("Duplicated");
 		}
 	}
 

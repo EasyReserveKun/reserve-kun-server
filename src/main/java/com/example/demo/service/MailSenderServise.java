@@ -7,11 +7,16 @@ import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * MailSenderService.java
+ * 存在するアカウントを確認するための機能を実装するクラス
+ * @author のうみそ＠overload
+ */
 @Service
 @AllArgsConstructor
 public class MailSenderServise {
 
-	private final JavaMailSender emailSender;
+	private final JavaMailSender mailSender;
 
 	@Async
 	public void sendSimpleMessage(String to, String subject, String text) {
@@ -21,7 +26,7 @@ public class MailSenderServise {
 		mail.setSubject(subject);
 		mail.setText(text);
 		try {
-			emailSender.send(mail);
+			mailSender.send(mail);
 		} catch (Exception e) {
 			System.out.println(e);
 		}

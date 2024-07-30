@@ -55,7 +55,7 @@ public class ReserveRestController {
 			cid = tokenService.extractUserId(reserveForm.getToken());
 
 		} catch (Exception e) {
-			responce = ResponceService.responceMaker("Denied");
+			responce = ResponceService.statusCustom("Denied");
 			return responce;
 		}
 
@@ -66,7 +66,7 @@ public class ReserveRestController {
 		
 		// 文字コードチェック
 		if (!EncodeService.canEncodeToSJIS(new String[]{ reserveForm.getEtc() })) {
-			responce = ResponceService.responceMaker("Error");
+			responce = ResponceService.statusError();
 			return responce;
 		}
 
@@ -74,9 +74,9 @@ public class ReserveRestController {
 		if (error.isEmpty()) {
 			// データベースへの書き込み
 			reserveRepository.saveAndFlush(reserve);
-			responce = ResponceService.responceMaker("Success");
+			responce = ResponceService.statusSuccess();
 		} else {
-			responce = ResponceService.responceMaker("Error");
+			responce = ResponceService.statusError();
 		}
 
 		return responce;
@@ -157,7 +157,7 @@ public class ReserveRestController {
 	public HashMap<String, Object> customerlist() {
 		HashMap<String, Object> responce = new HashMap<>();
 		List<Reserve> reserveList = reserveRepository.findAll();
-		responce = ResponceService.responceMaker("Success");
+		responce = ResponceService.statusSuccess();
 		responce.put("results", reserveList);
 		responce.put("type", "Customer");
 		return responce;

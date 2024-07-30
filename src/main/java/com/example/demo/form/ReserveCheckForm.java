@@ -15,6 +15,6 @@ public class ReserveCheckForm {
 
     private String eid;  // 従業員ID
     
-    private String stop_flag;
+    private String stopFlag;
 
 }

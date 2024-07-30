@@ -6,14 +6,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-//--------------------------------------------------//
-//  Employee.java
-//  コンシェルジュ情報を保持するエンティティクラス
-//--------------------------------------------------//
-
-@Data  // 基本的なメソッドの自動生成
-@Entity  // エンティティクラスであることの宣言
-@Table(name = "m_employee")  // "m_employee"テーブルの指定
+/**
+ * Employee.java
+ * コンシェルジュ情報テーブルと連携するEntityクラス
+ * @author のうみそ＠overload
+ */
+@Data
+@Entity
+@Table(name = "m_employee")
 public class Employee {
 
 	// 従業員ID (主キー)
