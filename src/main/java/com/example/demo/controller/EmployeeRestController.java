@@ -112,37 +112,6 @@ public class EmployeeRestController {
 		}
 	}
 
-//	/**
-//	 *使用していないかもしれない
-//	 */
-//	@Transactional
-//	@PostMapping("reactivation")
-//	public String reactivation(@RequestBody ReserveForm reserveForm) {
-//		Date date = reserveForm.getDate();
-//		String time = reserveForm.getTime();
-//		String eid = reserveForm.getEid();
-//
-//		if ("すべての時間".equals(time)) {
-//			int count = 0;
-//			for (String timeSlot : new String[] { "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00",
-//					"17:00", "18:00", "19:00" }) {
-//				count += reserveRepository.deleteByDateAndTimeAndEidAndStopFlag(date, eid, timeSlot);
-//			}
-//			if (count > 0) {
-//				return "すべての時間の受付を開始します";
-//			} else {
-//				return "エラーが発生しました";
-//			}
-//		} else {
-//			int count = reserveRepository.deleteByDateAndTimeAndEidAndStopFlag(date, eid, time);
-//			if (count == 1) {
-//				return "受付を開始します";
-//			} else {
-//				return "エラーが発生しました";
-//			}
-//		}
-//	}
-
 	/**
 	 * 管理者側で行う即時予約停止のためのエンドポイント
 	 * @param requestBody 絞り込みを行うための従業員番号
