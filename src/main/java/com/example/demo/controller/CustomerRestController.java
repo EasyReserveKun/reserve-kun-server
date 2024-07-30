@@ -208,43 +208,6 @@ public class CustomerRestController {
 		}
 	}
 
-	/**
-	 * デバッグ用 仮登録テーブルを確認するためのエンドポイント
-	 * @return　type:Temporary, results:全仮登録データ を含むjson
-	 */
-	@GetMapping("templist")
-	public HashMap<String, Object> templist() {
-		HashMap<String, Object> responce = new HashMap<>();
-		List<Temporary> tempList = temporaryRepository.findAll();
-		responce = ResponceService.statusSuccess();
-		responce.put("results", tempList);
-		responce.put("type", "Temporary");
-		return responce;
-	}
-
-	/**
-	 * デバッグ用 顧客テーブルを確認するためのエンドポイント
-	 * @return　type:Temporary, results:全仮登録データ を含むjson
-	 */
-	@GetMapping("customerlist")
-	public HashMap<String, Object> customerlist(@RequestParam(name = "cid", required = false) String cid) {
-		HashMap<String, Object> responce = new HashMap<>();
-		List<Customer> customerList = customerRepository.findAll();
-
-		try {
-			if (cid != null) {
-				customerRepository.deleteByCid(cid);
-			}
-		} catch (Exception e) {
-			System.err.println(e);
-		}
-
-		responce = ResponceService.statusSuccess();
-		responce.put("results", customerList);
-		responce.put("type", "Customer");
-		return responce;
-	}
-
 	public String generateCode() {
 		String code;
 		while (true) {
