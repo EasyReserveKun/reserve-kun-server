@@ -65,7 +65,7 @@ public class CustomerRestController {
 			// 存在しないアカウントならログイン失敗
 			Customer loginUser = loginService.findExistAccount(cid, password);
 			if (loginUser == null) {
-				responce = ResponceService.responceMaker("NotExist");
+				responce = ResponceService.responceMaker("NotFound");
 				return responce;
 			}
 
